@@ -1,4 +1,4 @@
-obj/*
-bin/*
+[Bb]in/
+[Oo]bj
 
 appsettings.local.json
