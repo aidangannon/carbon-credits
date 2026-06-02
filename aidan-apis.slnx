@@ -1,6 +1,12 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />
+    <Project Path="src/Core/Core.csproj" />
     <Project Path="src/Host/Host.csproj" />
+    <Project Path="src/Persistence/Persistence.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Acceptance/Acceptance.csproj" />
+    <Project Path="tests/Unit/Unit.csproj" />
   </Folder>
 </Solution>

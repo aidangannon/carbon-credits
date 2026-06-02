@@ -1,4 +1,4 @@
-﻿namespace Application;
+﻿namespace Persistence;
 
 public class Class1
 {
