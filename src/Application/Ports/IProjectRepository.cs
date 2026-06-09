@@ -1,9 +1,10 @@
+using Core;
+
 namespace Application.Ports;
 
 public interface IProjectRepository
 {
-    Task CreateAsync();
-    Task UpdateAsync();
-    Task GetAllAsync();
-    Task GetByIdAsync();
+    Task CreateAsync(Project project);
+    Task UpdateAsync(Project project);
+    Task<Project> GetByIdAsync(Guid id);
 }

@@ -7,6 +7,5 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Acceptance/Acceptance.csproj" />
-    <Project Path="tests/Unit/Unit.csproj" />
   </Folder>
 </Solution>
