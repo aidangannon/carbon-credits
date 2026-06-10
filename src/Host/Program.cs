@@ -1,6 +1,17 @@
+using Host.Extensions;
+using Host.Handlers.ErrorHandlers;
+
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+builder
+    .Services
+    .AddExceptionHandler<GlobalErrorHandler>()
+    .AddJwtAuthentication(builder.Configuration);
 
-app.Run();
+var application = builder.Build();
+
+application
+    .UseAuthentication()
+    .UseAuthorization();
+
+application.Run();

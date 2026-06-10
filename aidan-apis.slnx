@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />
     <Project Path="src/Core/Core.csproj" />
+    <Project Path="src/Crosscutting/Crosscutting.csproj" />
     <Project Path="src/Host/Host.csproj" />
     <Project Path="src/Persistence/Persistence.csproj" />
   </Folder>
