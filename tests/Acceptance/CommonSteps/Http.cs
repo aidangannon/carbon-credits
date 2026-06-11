@@ -35,4 +35,13 @@ public static class Http
         problem!.Status.Should().Be((int)status);
         problem.Detail.Should().Contain(detail);
     }
+
+    public static async Task The_Response_Body_Should_Be_Message_MESSAGE(
+        string message,
+        HttpResponseMessage response
+    )
+    {
+        var body = await response.Content.ReadAsStringAsync();
+        body.Should().Contain(message);
+    }
 }

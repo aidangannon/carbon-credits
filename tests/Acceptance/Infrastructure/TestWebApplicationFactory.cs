@@ -22,7 +22,6 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             services.AddSingleton(collector);
             services.AddLogging(b => b.AddProvider(new FakeLoggerProvider(collector)));
         });
-        builder.UseEnvironment("testing");
     }
 
     public override async ValueTask DisposeAsync()
@@ -38,5 +37,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
     private void OverrideConfiguration()
     {
         Environment.SetEnvironmentVariable("File__BasePath", _baseFilePath);
+        Environment.SetEnvironmentVariable("JwtOptions__Key", "carbon-credits-test-secret-key-32chars!!");
+        Environment.SetEnvironmentVariable("JwtOptions__Issuer", "carbon-credits-api");
+        Environment.SetEnvironmentVariable("JwtOptions__Audience", "carbon-credits-client");
     }
 }

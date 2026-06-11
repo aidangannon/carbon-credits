@@ -6,7 +6,7 @@ public static class AccountClientExtensions
     {
         var request = new HttpRequestMessage
         {
-            RequestUri = new Uri($"accounts/{id}"),
+            RequestUri = new Uri($"/accounts/{id}"),
             Method = HttpMethod.Get
         };
 
