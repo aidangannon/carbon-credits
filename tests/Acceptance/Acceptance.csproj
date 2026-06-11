@@ -2,14 +2,23 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Acceptance</RootNamespace>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" />
+    <PackageReference Include="AwesomeAssertions" />
     <PackageReference Include="LightBDD.XUnit3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Host\Host.csproj" />
+  </ItemGroup>
+
+   <ItemGroup>
+     <None Include="appsettings.testing.json" CopyToOutputDirectory="Always" />
+   </ItemGroup>
 
 </Project>

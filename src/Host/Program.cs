@@ -1,8 +1,7 @@
 using Host.Extensions;
 using Host.Handlers.Endpoints;
 using Host.Handlers.ErrorHandlers;
-using Host.Swagger;
-using Swashbuckle.AspNetCore.Filters;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,17 +9,17 @@ builder
     .Services
     .AddExceptionHandler<GlobalErrorHandler>()
     .AddJwtAuthentication(builder.Configuration)
-    .AddSwaggerGen(s => s.ExampleFilters())
-    .AddSwaggerExamplesFromAssemblyOf<AccountResponseExample>();
+    .AddOpenApi();
 
 
 var application = builder.Build();
 
 application
     .UseAuthentication()
-    .UseAuthorization()
-    .UseSwagger()
-    .UseSwaggerUI();
+    .UseAuthorization();
+
+application.MapOpenApi();
+application.MapScalarApiReference();
 
 application
     .MapEndpoints()
