@@ -1,4 +1,6 @@
+using Application.Slces;
 using Host.Constants;
+using Host.Extensions;
 using Host.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -17,9 +19,10 @@ public static class GetAccountByIdEndpoint
         return application;
     }
 
-    private static async Task<Results<Ok<AccountResponse>, NotFound<string>>> GetAccountById(
+    private static async Task<Results<Ok<AccountResponse>, ProblemHttpResult>> GetAccountById(
         [FromRoute] Guid id,
         [FromServices] ILoggerFactory loggerFactory,
+        [FromServices] IAccountRetrievalService accountRetrievalService,
         CancellationToken cancellationToken
     )
     {
@@ -30,9 +33,16 @@ public static class GetAccountByIdEndpoint
             [AccountId] = id.ToString()
         });
 
-        logger.LogInformation("Started Handler");
+        logger.LogInformation("Endpoint Called");
 
-        logger.LogInformation("Completed Handler");
+        var serviceResult = await accountRetrievalService.GetAccountById(id);
+
+        if (serviceResult.HasFailed())
+        {
+            return serviceResult.ToProblemResult();
+        }
+
+        logger.LogInformation("Endpoint Completed");
 
         return TypedResults.Ok(new AccountResponse
         {

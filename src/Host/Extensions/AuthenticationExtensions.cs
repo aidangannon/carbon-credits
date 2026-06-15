@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Host.Extensions;
 
-public static class AuthenticationExtensions
+public static class ServiceDependencyExtensions
 {
    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
    {

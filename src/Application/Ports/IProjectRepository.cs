@@ -1,10 +1,11 @@
-using Core;
+using Core.Models;
+using Crosscutting.Result;
 
 namespace Application.Ports;
 
 public interface IProjectRepository
 {
-    Task CreateAsync(Project project);
-    Task UpdateAsync(Project project);
-    Task<Project> GetByIdAsync(Guid id);
+    Task<Result> CreateAsync(Project project);
+    Task<Result> UpdateAsync(Project project);
+    Task<Result<Project>> GetByIdAsync(Guid id);
 }

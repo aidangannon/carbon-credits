@@ -1,6 +1,6 @@
 namespace Crosscutting.Result;
 
-public class Result
+public record Result
 {
     public required string? Error { get; init; }
 
@@ -12,7 +12,7 @@ public class Result
         };
     }
 
-    public static Result Err(string message)
+    public static Result Err(string? message)
     {
         return new Result
         {
@@ -26,7 +26,7 @@ public class Result
     }
 }
 
-public class Result<T>
+public record Result<T>
 {
     public required string? Error { get; init; }
     public required T? Value { get; init; }
@@ -40,7 +40,7 @@ public class Result<T>
         };
     }
 
-    public static Result<T> Err(string message)
+    public static Result<T> Err(string? message)
     {
         return new Result<T>
         {

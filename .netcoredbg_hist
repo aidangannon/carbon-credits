@@ -1,0 +1,4 @@
+continue
+print candidates
+print collector.GetSnapshot()[0]
+q

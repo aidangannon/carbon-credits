@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Json;
 
+namespace Acceptance.CommonSteps;
+
 public static class HttpSteps
 {
     public static void The_Response_Should_Have_Status_Code_STATUS_CODE(
