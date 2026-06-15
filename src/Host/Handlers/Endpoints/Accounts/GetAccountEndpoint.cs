@@ -37,12 +37,12 @@ public static class GetAccountByIdEndpoint
 
         var serviceResult = await accountRetrievalService.GetAccountById(id);
 
+        logger.LogInformation("Endpoint Completed");
+
         if (serviceResult.HasFailed())
         {
             return serviceResult.ToProblemResult();
         }
-
-        logger.LogInformation("Endpoint Completed");
 
         return TypedResults.Ok(new AccountResponse
         {
