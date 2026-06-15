@@ -22,7 +22,7 @@ public class Result
 
     public bool HasFailed()
     {
-        return Error == null;
+        return Error != null;
     }
 }
 
@@ -45,17 +45,22 @@ public class Result<T>
         return new Result<T>
         {
             Error = message,
-            Value = default
+            Value = default!
         };
     }
 
     public bool HasFailed()
     {
-        return Error == null;
+        return Error != null;
     }
 
     public T Unwrap()
     {
-        return Value ?? throw new ArgumentNullException(nameof(Value), "Result value is null, failed to unwrap");
+        if (HasFailed())
+        {
+            throw new ArgumentNullException(nameof(Value), "Result value is null, failed to unwrap");
+        }
+
+        return Value!;
     }
 }
