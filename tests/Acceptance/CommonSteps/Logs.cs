@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Acceptance.CommonSteps;
 
-public static class Logs
+public static class LogSteps
 {
     public static Task There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(
         LogLevel level,

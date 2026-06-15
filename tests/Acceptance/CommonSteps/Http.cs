@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Json;
 
-public static class Http
+public static class HttpSteps
 {
     public static void The_Response_Should_Have_Status_Code_STATUS_CODE(
         HttpStatusCode statusCode,
