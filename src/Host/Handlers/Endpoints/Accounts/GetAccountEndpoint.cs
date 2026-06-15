@@ -1,6 +1,7 @@
 using Application.Slces;
 using Host.Constants;
 using Host.Extensions;
+using Host.Mappers;
 using Host.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -44,12 +45,8 @@ public static class GetAccountByIdEndpoint
             return serviceResult.ToProblemResult();
         }
 
-        return TypedResults.Ok(new AccountResponse
-        {
-            Id = Guid.NewGuid(),
-            Name = "Blah",
-            CreatedAt = DateTime.MinValue,
-            Credits = []
-        });
+        var accountResponse = serviceResult.Unwrap().ToResponse();
+
+        return TypedResults.Ok(accountResponse);
     }
 }

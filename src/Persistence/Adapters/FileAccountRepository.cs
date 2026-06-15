@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Text.Json;
 using Application.Ports;
 using Core.Errors;
 using Core.Models;
@@ -23,7 +24,8 @@ public class FileAccountRepository(IOptions<FileOptions> fileOptions) : IAccount
         }
 
         var accountText = await File.ReadAllTextAsync(path);
+        var account = JsonSerializer.Deserialize<Account>(accountText);
 
-        throw new NotImplementedException();
+        return Result<Account>.Ok(account!);
     }
 }
