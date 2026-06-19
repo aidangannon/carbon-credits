@@ -9,6 +9,7 @@ public static class ErrorCodeMapper
     public static ErrorDetails ToErrorDetails(string errorCode) => errorCode switch
     {
         AccountErrors.NotFound => new ErrorDetails(StatusCodes.Status404NotFound, "Not found"),
+        ProjectErrors.NotFound => new ErrorDetails(StatusCodes.Status404NotFound, "Not found"),
         _ => throw new InvalidOperationException($"Unhandled error code: {errorCode}")
     };
 }

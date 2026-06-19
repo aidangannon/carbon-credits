@@ -15,7 +15,8 @@ public static class DependencyExtensions
    {
        return services
            .AddTransient<IAccountRetrievalService, AccountRetrievalService>()
-           .AddTransient<IAccountCreationService, AccountCreationService>();
+           .AddTransient<IAccountCreationService, AccountCreationService>()
+           .AddTransient<IProjectCreationService, ProjectCreationService>();
    }
 
    public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
@@ -28,12 +29,14 @@ public static class DependencyExtensions
    public static IServiceCollection AddPersistence(this IServiceCollection services)
    {
        return services
-           .AddSingleton<IAccountRepository, FileAccountRepository>();
+           .AddSingleton<IAccountRepository, FileAccountRepository>()
+           .AddSingleton<IProjectRepository, FileProjectRepository>();
    }
 
    public static IServiceCollection AddValidation(this IServiceCollection services)
    {
        return services
-           .AddTransient<IValidator<CreateAccountRequest>, CreateAccountRequestValidator>();
+           .AddTransient<IValidator<CreateAccountRequest>, CreateAccountRequestValidator>()
+           .AddTransient<IValidator<CreateProjectRequest>, CreateProjectRequestValidator>();
    }
 }

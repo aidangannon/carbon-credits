@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
 namespace Acceptance.Infrastructure.Logging;
@@ -6,11 +7,11 @@ public record FakeLogRecord(LogLevel Level, string Message, IReadOnlyList<object
 
 public class FakeLogCollector
 {
-    private readonly List<FakeLogRecord> _logs = [];
+    private readonly ConcurrentBag<FakeLogRecord> _logs = [];
 
     public void Add(FakeLogRecord record) => _logs.Add(record);
 
-    public IReadOnlyList<FakeLogRecord> GetSnapshot() => _logs.AsReadOnly();
+    public IReadOnlyList<FakeLogRecord> GetSnapshot() => [.. _logs];
 }
 
 public class FakeLogger(FakeLogCollector collector) : ILogger

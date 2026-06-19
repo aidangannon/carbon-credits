@@ -1,3 +1,8 @@
+using Application.Slces;
+using FluentValidation;
+using Host.Constants;
+using Host.Extensions;
+using Host.Mappers;
 using Host.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +21,41 @@ public static class CreateProjectEndpoint
         return group;
     }
 
-    private static Task<Results<Created<ProjectResponse>, ValidationProblem, ProblemHttpResult>> CreateProject(
+    private static async Task<Results<Created<ProjectResponse>, ValidationProblem, ProblemHttpResult>> CreateProject(
         [FromBody] CreateProjectRequest request,
+        [FromServices] IValidator<CreateProjectRequest> validator,
+        [FromServices] IProjectCreationService projectCreationService,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken
     )
     {
-        Results<Created<ProjectResponse>, ValidationProblem, ProblemHttpResult> result =
-            TypedResults.Created("/projects/stub", new ProjectResponse
-            {
-                Id = Guid.Empty,
-                Name = string.Empty,
-                Country = string.Empty,
-                Type = string.Empty
-            });
+        var logger = loggerFactory.CreateLogger(LoggingOperations.CreateProject);
+        using var _ = logger.BeginScope(new Dictionary<string, object>
+        {
+            [Operation] = LoggingOperations.CreateProject,
+            [ProjectName] = request.Name
+        });
 
-        return Task.FromResult(result);
+        logger.LogInformation("Endpoint Called");
+
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
+        }
+
+        var project = request.ToProject();
+        var serviceResult = await projectCreationService.CreateProject(project, cancellationToken);
+
+        logger.LogInformation("Endpoint Completed");
+
+        if (serviceResult.HasFailed())
+        {
+            return serviceResult.ToProblemResult();
+        }
+
+        var projectResponse = serviceResult.Unwrap().ToResponse();
+
+        return TypedResults.Created($"/projects/{projectResponse.Id}", projectResponse);
     }
 }
