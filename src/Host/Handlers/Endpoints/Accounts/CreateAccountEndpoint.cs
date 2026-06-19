@@ -23,9 +23,9 @@ public static class CreateAccountEndpoint
 
     private static async Task<Results<Created<AccountResponse>, ValidationProblem, ProblemHttpResult>> CreateAccount(
         [FromBody] CreateAccountRequest request,
-        [FromServices] ILoggerFactory loggerFactory,
         [FromServices] IValidator<CreateAccountRequest> validator,
         [FromServices] IAccountCreationService accountCreationService,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken
     )
     {
@@ -41,12 +41,11 @@ public static class CreateAccountEndpoint
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            logger.LogInformation("Endpoint Completed");
             return TypedResults.ValidationProblem(validationResult.ToDictionary());
         }
 
         var account = request.ToAccount();
-        var serviceResult = await accountCreationService.CreateAccount(account);
+        var serviceResult = await accountCreationService.CreateAccount(account, cancellationToken);
 
         logger.LogInformation("Endpoint Completed");
 

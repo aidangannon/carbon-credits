@@ -22,8 +22,8 @@ public static class GetAccountByIdEndpoint
 
     private static async Task<Results<Ok<AccountResponse>, ProblemHttpResult>> GetAccountById(
         [FromRoute] Guid id,
-        [FromServices] ILoggerFactory loggerFactory,
         [FromServices] IAccountRetrievalService accountRetrievalService,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken
     )
     {
@@ -36,7 +36,7 @@ public static class GetAccountByIdEndpoint
 
         logger.LogInformation("Endpoint Called");
 
-        var serviceResult = await accountRetrievalService.GetAccountById(id);
+        var serviceResult = await accountRetrievalService.GetAccountById(id, cancellationToken);
 
         logger.LogInformation("Endpoint Completed");
 

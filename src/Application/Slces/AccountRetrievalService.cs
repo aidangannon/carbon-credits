@@ -6,8 +6,8 @@ namespace Application.Slces;
 
 public class AccountRetrievalService(IAccountRepository accountRepository) : IAccountRetrievalService
 {
-    public async Task<Result<Account>> GetAccountById(Guid id)
+    public async Task<Result<Account>> GetAccountById(Guid id, CancellationToken cancellationToken)
     {
-        return await accountRepository.GetByIdAsync(id);
+        return await accountRepository.GetByIdAsync(id, cancellationToken);
     }
 }

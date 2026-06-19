@@ -6,9 +6,9 @@ namespace Application.Slces;
 
 public class AccountCreationService(IAccountRepository accountRepository) : IAccountCreationService
 {
-    public async Task<Result<Account>> CreateAccount(Account account)
+    public async Task<Result<Account>> CreateAccount(Account account, CancellationToken cancellationToken)
     {
-        var result = await accountRepository.SaveAsync(account);
+        var result = await accountRepository.SaveAsync(account, cancellationToken);
 
         if (result.HasFailed())
         {

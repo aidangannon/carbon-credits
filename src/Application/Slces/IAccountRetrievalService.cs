@@ -5,5 +5,5 @@ namespace Application.Slces;
 
 public interface IAccountRetrievalService
 {
-    Task<Result<Account>> GetAccountById(Guid id);
+    Task<Result<Account>> GetAccountById(Guid id, CancellationToken cancellationToken);
 }

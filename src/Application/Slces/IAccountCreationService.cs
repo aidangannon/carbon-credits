@@ -5,5 +5,5 @@ namespace Application.Slces;
 
 public interface IAccountCreationService
 {
-    Task<Result<Account>> CreateAccount(Account account);
+    Task<Result<Account>> CreateAccount(Account account, CancellationToken cancellationToken);
 }
