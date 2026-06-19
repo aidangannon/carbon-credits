@@ -6,4 +6,5 @@ namespace Application.Ports;
 public interface IAccountRepository
 {
     Task<Result<Account>> GetByIdAsync(Guid id);
+    Task<Result> SaveAsync(Account account);
 }

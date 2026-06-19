@@ -13,6 +13,7 @@ builder
     .AddOpenApi()
     .AddApplication()
     .AddPersistence()
+    .AddValidation()
     .AddConfiguration(builder.Configuration);
 
 

@@ -28,4 +28,15 @@ public class FileAccountRepository(IOptions<FileOptions> fileOptions) : IAccount
 
         return Result<Account>.Ok(account!);
     }
+
+    public async Task<Result> SaveAsync(Account account)
+    {
+        var basePath = fileOptions.Value?.BasePath ?? throw new ArgumentNullException("BasePath", "File base path cannot be null");
+        var path = $"{basePath}/accounts/{account.Id}";
+
+        var accountText = JsonSerializer.Serialize(account);
+        await File.WriteAllTextAsync(path, accountText);
+
+        return Result.Ok();
+    }
 }

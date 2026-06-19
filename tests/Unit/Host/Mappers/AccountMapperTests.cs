@@ -3,6 +3,7 @@ using AwesomeAssertions;
 using AwesomeAssertions.Execution;
 using Core.Models;
 using Host.Mappers;
+using Host.Models;
 
 namespace Unit.Host.Mappers;
 
@@ -42,5 +43,19 @@ public class AccountMapperTests
             .Credits
             .Should()
             .BeEmpty();
+    }
+
+    [Fact]
+    public void ToAccount_ShouldMapAllFields()
+    {
+        var request = new CreateAccountRequest { Name = "Test Account" };
+
+        var account = request.ToAccount();
+
+        using var scope = new AssertionScope();
+        account.Id.Should().NotBe(Guid.Empty);
+        account.Name.Should().Be(request.Name);
+        account.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        account.Credits.Should().BeEmpty();
     }
 }

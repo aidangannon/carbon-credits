@@ -7,6 +7,7 @@ public static class AccountsEndpointMapper
         return app
             .MapGroup("accounts")
             .MapGetAccountById()
+            .MapCreateAccount()
             .WithTags("Accounts");
     }
 }

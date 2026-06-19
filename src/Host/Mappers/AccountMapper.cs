@@ -15,4 +15,15 @@ public static class AccountMapper
             Credits = account.Credits.Select(c => c.ToResponse()).ToList()
         };
     }
+
+    public static Account ToAccount(this CreateAccountRequest request)
+    {
+        return new Account
+        {
+            Id = Guid.NewGuid(),
+            Name = request.Name,
+            CreatedAt = DateTime.UtcNow,
+            Credits = []
+        };
+    }
 }
