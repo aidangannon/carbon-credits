@@ -16,28 +16,19 @@ public class FakeLogCollector
 
 public class FakeLogger(FakeLogCollector collector) : ILogger
 {
-    private static readonly AsyncLocal<List<object?>?> _scopesLocal = new();
-
-    private static List<object?> CurrentScopes
-    {
-        get
-        {
-            _scopesLocal.Value ??= [];
-            return _scopesLocal.Value;
-        }
-    }
+    private readonly List<object?> _scopes = [];
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
     {
-        CurrentScopes.Add(state);
-        return new ScopeDisposable(() => CurrentScopes.Remove(state));
+        _scopes.Add(state);
+        return new ScopeDisposable(() => _scopes.Remove(state));
     }
 
     public bool IsEnabled(LogLevel logLevel) => true;
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        collector.Add(new FakeLogRecord(logLevel, formatter(state, exception), [.. CurrentScopes]));
+        collector.Add(new FakeLogRecord(logLevel, formatter(state, exception), [.. _scopes]));
     }
 
     private sealed class ScopeDisposable(Action onDispose) : IDisposable
