@@ -16,7 +16,8 @@ public static class DependencyExtensions
        return services
            .AddTransient<IAccountRetrievalService, AccountRetrievalService>()
            .AddTransient<IAccountCreationService, AccountCreationService>()
-           .AddTransient<IProjectCreationService, ProjectCreationService>();
+           .AddTransient<IProjectCreationService, ProjectCreationService>()
+           .AddTransient<IProjectRetrievalService, ProjectRetrievalService>();
    }
 
    public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)

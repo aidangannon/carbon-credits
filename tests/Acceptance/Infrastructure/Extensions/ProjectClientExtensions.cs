@@ -16,4 +16,15 @@ public static class ProjectClientExtensions
 
         return await client.SendAsync(request);
     }
+
+    public static async Task<HttpResponseMessage> GetProjectById(this HttpClient client, Guid id)
+    {
+        var request = new HttpRequestMessage
+        {
+            RequestUri = new Uri($"/projects/{id}"),
+            Method = HttpMethod.Get
+        };
+
+        return await client.SendAsync(request);
+    }
 }

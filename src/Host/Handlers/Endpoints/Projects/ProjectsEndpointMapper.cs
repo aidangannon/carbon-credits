@@ -7,6 +7,7 @@ public static class ProjectsEndpointMapper
         return app
             .MapGroup("projects")
             .MapCreateProject()
+            .MapGetProjectById()
             .WithTags("Projects");
     }
 }
