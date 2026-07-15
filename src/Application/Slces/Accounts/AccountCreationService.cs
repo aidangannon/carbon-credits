@@ -2,7 +2,7 @@ using Application.Ports;
 using Core.Models;
 using Crosscutting.Result;
 
-namespace Application.Slces;
+namespace Application.Slces.Accounts;
 
 public class AccountCreationService(IAccountRepository accountRepository) : IAccountCreationService
 {

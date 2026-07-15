@@ -1,5 +1,6 @@
 using Application.Ports;
-using Application.Slces;
+using Application.Slces.Accounts;
+using Application.Slces.Projects;
 using Crosscutting.Options;
 using FluentValidation;
 using Host.Models;

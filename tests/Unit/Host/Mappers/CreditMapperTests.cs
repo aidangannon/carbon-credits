@@ -2,7 +2,7 @@ using AutoFixture;
 using AwesomeAssertions;
 using AwesomeAssertions.Execution;
 using Core.Models;
-using Host.Mappers;
+using Host.Mappers.Accounts;
 
 namespace Unit.Host.Mappers;
 

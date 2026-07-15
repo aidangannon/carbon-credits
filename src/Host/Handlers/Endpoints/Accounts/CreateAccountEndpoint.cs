@@ -1,8 +1,8 @@
-using Application.Slces;
+using Application.Slces.Accounts;
 using FluentValidation;
 using Host.Constants;
 using Host.Extensions;
-using Host.Mappers;
+using Host.Mappers.Accounts;
 using Host.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

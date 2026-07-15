@@ -1,7 +1,7 @@
 using Core.Models;
 using Crosscutting.Result;
 
-namespace Application.Slces;
+namespace Application.Slces.Projects;
 
 public interface IProjectRetrievalService
 {

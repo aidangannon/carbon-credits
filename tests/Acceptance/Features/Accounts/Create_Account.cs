@@ -4,7 +4,7 @@ using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit3;
 using Microsoft.Extensions.Logging;
 
-namespace Acceptance.Features;
+namespace Acceptance.Features.Accounts;
 
 public partial class Create_Account
 {

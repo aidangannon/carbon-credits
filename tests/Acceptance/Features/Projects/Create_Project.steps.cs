@@ -6,24 +6,28 @@ using AwesomeAssertions.Execution;
 using Host.Models;
 using LightBDD.XUnit3;
 
-namespace Acceptance.Features;
+namespace Acceptance.Features.Projects;
 
-public partial class Create_Account : FeatureFixture
+public partial class Create_Project : FeatureFixture
 {
     private HttpResponseMessage? _httpResponse;
     private string _name;
+    private string _country;
+    private string _type;
     private readonly HttpClient _client;
     private readonly Dictionary<string, string> _scopes;
     private readonly IServiceProvider _services;
-    private const string OperationName = "CreateAccount";
+    private const string OperationName = "CreateProject";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
 
-    public Create_Account()
+    public Create_Project()
     {
         _client = TestWebApplicationFactory.Instance!.CreateClient();
         _services = TestWebApplicationFactory.Instance!.Services;
         _name = Guid.NewGuid().ToString();
+        _country = "UK";
+        _type = "Renewable";
 
         _scopes = new Dictionary<string, string>
         {
@@ -31,20 +35,25 @@ public partial class Create_Account : FeatureFixture
         };
     }
 
-    private async Task A_Create_Account_Request_Is_Sent(string name)
+    private async Task A_Create_Project_Request_Is_Sent(string name, string country, string type)
     {
-        _scopes[AccountName] = name;
-        _httpResponse = await _client.CreateAccount(new CreateAccountRequest { Name = name });
+        _scopes[ProjectName] = name;
+        _httpResponse = await _client.CreateProject(new CreateProjectRequest
+        {
+            Name = name,
+            Country = country,
+            Type = type
+        });
     }
 
     private async Task The_Response_Should_Reflect_The_Create_Request()
     {
-        var accountResponse = await _httpResponse!.Content.ReadFromJsonAsync<AccountResponse>();
+        var projectResponse = await _httpResponse!.Content.ReadFromJsonAsync<ProjectResponse>();
 
         using var scope = new AssertionScope();
-        accountResponse!.Id.Should().NotBe(Guid.Empty);
-        accountResponse.Name.Should().Be(_name);
-        accountResponse.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
-        accountResponse.Credits.Should().BeEmpty();
+        projectResponse!.Id.Should().NotBe(Guid.Empty);
+        projectResponse.Name.Should().Be(_name);
+        projectResponse.Country.Should().Be(_country);
+        projectResponse.Type.Should().Be(_type);
     }
 }

@@ -10,60 +10,57 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using FileOptions = Crosscutting.Options.FileOptions;
 
-namespace Acceptance.Features;
+namespace Acceptance.Features.Projects;
 
-public partial class Get_Account_By_Id : FeatureFixture
+public partial class Get_Project_By_Id : FeatureFixture
 {
-    private Guid _accountId;
+    private Guid _projectId;
     private HttpResponseMessage? _httpResponse;
-    private Account? _account;
+    private Project? _project;
     private readonly HttpClient _client;
     private readonly Dictionary<string, string> _scopes;
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
     private readonly JsonSerializerOptions _options;
-    private const string OperationName = "GetAccountById";
+    private const string OperationName = "GetProjectById";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
 
-    public Get_Account_By_Id()
+    public Get_Project_By_Id()
     {
         _client = TestWebApplicationFactory.Instance!.CreateClient();
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
 
-        _options = new JsonSerializerOptions()
-        {
-            WriteIndented = true
-        };
+        _options = new JsonSerializerOptions { WriteIndented = true };
 
-        _scopes = new Dictionary<string, string>()
+        _scopes = new Dictionary<string, string>
         {
             [Operation] = OperationName
         };
     }
 
-    private async Task Get_Account_By_Id_ID_Request_Is_Sent(Guid id)
+    private async Task Get_Project_By_Id_ID_Request_Is_Sent(Guid id)
     {
-        _scopes[AccountId] = id.ToString();
-        _httpResponse = await _client.GetAccountById(id);
+        _scopes[ProjectId] = id.ToString();
+        _httpResponse = await _client.GetProjectById(id);
     }
 
-    private async Task An_Account_Exists()
+    private async Task A_Project_Exists()
     {
-        _account = _fixture.Create<Account>();
-        _accountId = _account.Id;
+        _project = _fixture.Create<Project>();
+        _projectId = _project.Id;
 
-        var accountText = JsonSerializer.Serialize(_account, _options);
-        File.WriteAllText(_basePath + $"/accounts/{_accountId}", accountText);
+        var projectText = JsonSerializer.Serialize(_project, _options);
+        File.WriteAllText(_basePath + $"/projects/{_projectId}", projectText);
     }
 
-    private async Task The_Response_Equals_Account()
+    private async Task The_Response_Equals_Project()
     {
-        var accountResponse = await _httpResponse!.Content.ReadFromJsonAsync<AccountResponse>();
+        var projectResponse = await _httpResponse!.Content.ReadFromJsonAsync<ProjectResponse>();
 
-        accountResponse!.ShouldEqual(_account!);
+        projectResponse!.ShouldEqual(_project!);
     }
 }

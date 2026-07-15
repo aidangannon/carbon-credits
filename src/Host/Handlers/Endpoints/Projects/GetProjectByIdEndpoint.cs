@@ -1,7 +1,7 @@
-using Application.Slces;
+using Application.Slces.Projects;
 using Host.Constants;
 using Host.Extensions;
-using Host.Mappers;
+using Host.Mappers.Projects;
 using Host.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

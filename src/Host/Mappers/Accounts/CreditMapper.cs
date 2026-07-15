@@ -1,7 +1,7 @@
 using Core.Models;
 using Host.Models;
 
-namespace Host.Mappers;
+namespace Host.Mappers.Accounts;
 
 public static class CreditMapper
 {
