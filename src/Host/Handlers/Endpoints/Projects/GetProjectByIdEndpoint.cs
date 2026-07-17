@@ -1,4 +1,4 @@
-using Application.Slces.Projects;
+using Application.Slices.Projects;
 using Host.Constants;
 using Host.Extensions;
 using Host.Mappers.Projects;

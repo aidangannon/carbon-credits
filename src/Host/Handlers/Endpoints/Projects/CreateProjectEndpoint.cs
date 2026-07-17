@@ -1,4 +1,4 @@
-using Application.Slces.Projects;
+using Application.Slices.Projects;
 using FluentValidation;
 using Host.Constants;
 using Host.Extensions;

@@ -2,7 +2,12 @@ using Application.Ports;
 using Core.Models;
 using Crosscutting.Result;
 
-namespace Application.Slces.Projects;
+namespace Application.Slices.Projects;
+
+public interface IProjectRetrievalService
+{
+    Task<Result<Project>> GetProjectById(Guid id, CancellationToken cancellationToken);
+}
 
 public class ProjectRetrievalService(IProjectRepository projectRepository) : IProjectRetrievalService
 {

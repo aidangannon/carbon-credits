@@ -2,7 +2,12 @@ using Application.Ports;
 using Core.Models;
 using Crosscutting.Result;
 
-namespace Application.Slces.Accounts;
+namespace Application.Slices.Accounts;
+
+public interface IAccountRetrievalService
+{
+    Task<Result<Account>> GetAccountById(Guid id, CancellationToken cancellationToken);
+}
 
 public class AccountRetrievalService(IAccountRepository accountRepository) : IAccountRetrievalService
 {

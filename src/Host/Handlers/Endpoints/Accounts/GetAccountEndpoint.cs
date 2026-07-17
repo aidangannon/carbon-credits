@@ -1,4 +1,4 @@
-using Application.Slces.Accounts;
+using Application.Slices.Accounts;
 using Host.Constants;
 using Host.Extensions;
 using Host.Mappers.Accounts;

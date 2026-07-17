@@ -2,7 +2,12 @@ using Application.Ports;
 using Core.Models;
 using Crosscutting.Result;
 
-namespace Application.Slces.Accounts;
+namespace Application.Slices.Accounts;
+
+public interface IAccountCreationService
+{
+    Task<Result<Account>> CreateAccount(Account account, CancellationToken cancellationToken);
+}
 
 public class AccountCreationService(IAccountRepository accountRepository) : IAccountCreationService
 {

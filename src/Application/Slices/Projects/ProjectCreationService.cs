@@ -2,7 +2,12 @@ using Application.Ports;
 using Core.Models;
 using Crosscutting.Result;
 
-namespace Application.Slces.Projects;
+namespace Application.Slices.Projects;
+
+public interface IProjectCreationService
+{
+    Task<Result<Project>> CreateProject(Project project, CancellationToken cancellationToken);
+}
 
 public class ProjectCreationService(IProjectRepository projectRepository) : IProjectCreationService
 {

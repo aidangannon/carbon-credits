@@ -1,4 +1,4 @@
-using Application.Slces.Accounts;
+using Application.Slices.Accounts;
 using FluentValidation;
 using Host.Constants;
 using Host.Extensions;
