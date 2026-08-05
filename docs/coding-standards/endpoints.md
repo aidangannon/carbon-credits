@@ -18,31 +18,7 @@ See [`CreateAccountEndpoint.cs`](/src/Host/Handlers/Endpoints/Accounts/CreateAcc
 
 ## Handler File
 
-One public extension method registers the route. One private static method is the handler. Nothing else lives in the file:
-
-```csharp
-public static class CreateAccountEndpoint
-{
-    public static RouteGroupBuilder MapCreateAccount(this RouteGroupBuilder group)
-    {
-        group
-            .MapPost("", CreateAccount)
-            .WithSummary("Creates an account")
-            .WithDescription("Creates a new account with the given name");
-
-        return group;
-    }
-
-    private static async Task<Results<Created<AccountResponse>, ValidationProblem, ProblemHttpResult>> CreateAccount(
-        [FromBody] CreateAccountRequest request,
-        [FromServices] IValidator<CreateAccountRequest> validator,
-        [FromServices] IAccountCreationService accountCreationService,
-        [FromServices] ILoggerFactory loggerFactory,
-        CancellationToken cancellationToken
-    )
-    { ... }
-}
-```
+One public extension method registers the route. One private static method is the handler. Nothing else lives in the file. See [`CreateAccountEndpoint.cs`](/src/Host/Handlers/Endpoints/Accounts/CreateAccountEndpoint.cs) and [`GetAccountByIdEndpoint.cs`](/src/Host/Handlers/Endpoints/Accounts/GetAccountByIdEndpoint.cs).
 
 ## Dependency Injection
 
@@ -50,48 +26,14 @@ Inject all dependencies via `[FromServices]` attributes on the handler method pa
 
 ## Feature Mapper
 
-Each feature has a mapper that creates the group and chains all endpoints for that feature:
-
-```csharp
-public static class AccountsEndpointMapper
-{
-    public static RouteGroupBuilder MapAccountEndpoints(this WebApplication app)
-    {
-        return app
-            .MapGroup("accounts")
-            .MapGetAccountById()
-            .MapCreateAccount()
-            .WithTags("Accounts");
-    }
-}
-```
+Each feature has a mapper that creates the route group and chains all its endpoints. See [`AccountsEndpointMapper.cs`](/src/Host/Handlers/Endpoints/Accounts/AccountsEndpointMapper.cs) and [`ProjectsEndpointMapper.cs`](/src/Host/Handlers/Endpoints/Projects/ProjectsEndpointMapper.cs).
 
 ## Root Mapper
 
-[`EndpointMapper.cs`](/src/Host/Handlers/Endpoints/EndpointMapper.cs) is the single place that calls every feature mapper. Adding a new feature means adding one line here:
-
-```csharp
-public static class EndpointMapper
-{
-    public static WebApplication MapEndpoints(this WebApplication app)
-    {
-        app.MapAccountEndpoints();
-        app.MapProjectEndpoints();
-
-        return app;
-    }
-}
-```
+[`EndpointMapper.cs`](/src/Host/Handlers/Endpoints/EndpointMapper.cs) is the single place that calls every feature mapper. Adding a new feature means adding one line here.
 
 ## Auth and Filters
 
-Apply auth and filters at the endpoint level using extension methods - not globally, not in middleware. This makes the security posture of each endpoint explicit and visible in its file:
-
-```csharp
-group
-    .MapPost("", CreateAccount)
-    .RequireAuthorization()
-    .AddEndpointFilter<MyFilter>();
-```
+Apply auth and filters at the endpoint level using extension methods - not globally, not in middleware. This makes the security posture of each endpoint explicit and visible in its file. Use `.RequireAuthorization()` and `.AddEndpointFilter<T>()` chained on the route registration.
 
 Never rely on a global auth policy to cover an endpoint silently. If an endpoint requires auth, it must say so explicitly.

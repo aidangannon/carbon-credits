@@ -22,20 +22,7 @@ Do not unit test:
 
 ## Structure
 
-Mirror the source structure under `tests/Unit/`. One test class per source class, suffixed with `Tests`:
-
-```
-src/Host/Mappers/Accounts/AccountMapper.cs
-tests/Unit/Host/Mappers/AccountMapperTests.cs
-```
-
-Use `AssertionScope` when asserting multiple fields in a single test so all failures are reported together, not just the first:
-
-```csharp
-using var scope = new AssertionScope();
-response.Id.Should().Be(account.Id);
-response.Name.Should().Be(account.Name);
-```
+Mirror the source structure under `tests/Unit/`. One test class per source class, suffixed with `Tests`. Use `AssertionScope` when asserting multiple fields so all failures are reported together, not just the first. See [`AccountMapperTests.cs`](/tests/Unit/Host/Mappers/AccountMapperTests.cs) for an example of both conventions.
 
 ## Summary
 
