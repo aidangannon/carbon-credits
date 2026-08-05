@@ -28,11 +28,11 @@ public static class AccountClientExtensions
         return await client.SendAsync(request);
     }
 
-    public static async Task<HttpResponseMessage> CreateCredit(this HttpClient client, Guid accountId, CreateCreditRequest body)
+    public static async Task<HttpResponseMessage> CreateCredit(this HttpClient client, Guid accountId, Guid projectId, CreateCreditRequest body)
     {
         var request = new HttpRequestMessage
         {
-            RequestUri = new Uri($"/accounts/{accountId}/credits"),
+            RequestUri = new Uri($"/accounts/{accountId}/projects/{projectId}/credits"),
             Method = HttpMethod.Post,
             Content = JsonContent.Create(body)
         };

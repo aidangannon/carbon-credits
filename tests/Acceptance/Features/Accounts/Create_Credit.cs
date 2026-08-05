@@ -51,7 +51,7 @@ public partial class Create_Credit
         return Runner.RunScenarioAsync(
             given => An_Account_Exists(),
             and => A_Project_Exists_For_The_Credit(),
-            when => A_Create_Credit_Request_Is_Sent(_accountId, _issuedAt, Guid.NewGuid()),
+            when => A_Create_Credit_Request_Is_Sent_With_Mismatching_Project_Id(),
             then => HttpSteps.The_Response_Should_Have_Problem_Details_With_Status_STATUS_And_Detail_DETAIL(HttpStatusCode.UnprocessableEntity, CreditErrors.ProjectMismatch, _httpResponse!)
         );
     }

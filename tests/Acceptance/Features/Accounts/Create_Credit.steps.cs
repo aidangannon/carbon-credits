@@ -76,10 +76,20 @@ public partial class Create_Credit : FeatureFixture
     private async Task A_Create_Credit_Request_Is_Sent(Guid accountId, DateTime issuedAt, Guid projectId)
     {
         _scopes[AccountId] = accountId.ToString();
-        _httpResponse = await _client.CreateCredit(accountId, new CreateCreditRequest
+        _httpResponse = await _client.CreateCredit(accountId, projectId, new CreateCreditRequest
         {
             IssuedAt = issuedAt,
             ProjectId = projectId
+        });
+    }
+
+    private async Task A_Create_Credit_Request_Is_Sent_With_Mismatching_Project_Id()
+    {
+        _scopes[AccountId] = _accountId.ToString();
+        _httpResponse = await _client.CreateCredit(_accountId, _projectId, new CreateCreditRequest
+        {
+            IssuedAt = _issuedAt,
+            ProjectId = Guid.NewGuid()
         });
     }
 
