@@ -1,3 +1,5 @@
+[← Back to Index](./index.md)
+
 # Architecture: Dependencies
 
 > **Guide:** How packages are managed and where to add new dependencies.
