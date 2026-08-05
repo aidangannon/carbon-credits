@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 
 namespace Persistence.Locking;
 
+/// <summary>Per-key async mutual exclusion for repositories.</summary>
 public class RepositoryLock
 {
     private readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
