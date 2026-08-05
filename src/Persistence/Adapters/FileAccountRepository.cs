@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Text.Json;
 using Application.Ports;
 using Core.Errors;
@@ -6,13 +5,14 @@ using Core.Models;
 using Core.Result;
 using Crosscutting.Result;
 using Microsoft.Extensions.Options;
+using Persistence.Locking;
 using FileOptions = Crosscutting.Options.FileOptions;
 
 namespace Persistence.Adapters;
 
 public class FileAccountRepository(IOptions<FileOptions> fileOptions) : IAccountRepository
 {
-    private readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
+    private readonly RepositoryLock _lock = new();
 
     public async Task<Result<Account>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -41,25 +41,9 @@ public class FileAccountRepository(IOptions<FileOptions> fileOptions) : IAccount
         return Result.Ok();
     }
 
-    private sealed class AccountWriteLock(SemaphoreSlim semaphore) : IAsyncDisposable
-    {
-        public ValueTask DisposeAsync()
-        {
-            semaphore.Release();
-            return ValueTask.CompletedTask;
-        }
-    }
-
-    private async Task<AccountWriteLock> AcquireLockAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var semaphore = _locks.GetOrAdd(id, _ => new SemaphoreSlim(1, 1));
-        await semaphore.WaitAsync(cancellationToken);
-        return new AccountWriteLock(semaphore);
-    }
-
     public async Task<Result<Account>> AddCreditAsync(Guid accountId, Project project, Credit credit, CancellationToken cancellationToken)
     {
-        await using var _ = await AcquireLockAsync(accountId, cancellationToken);
+        await using var _ = await _lock.AcquireAsync(accountId, cancellationToken);
 
         var getResult = await GetByIdAsync(accountId, cancellationToken);
         if (getResult.HasFailed())
