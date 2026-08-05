@@ -14,15 +14,16 @@ public static class CreateCreditEndpoint
     public static RouteGroupBuilder MapCreateCredit(this RouteGroupBuilder group)
     {
         group
-            .MapPost("{accountId:guid}/credits", CreateCredit)
+            .MapPost("{accountId:guid}/projects/{projectId:guid}/credits", CreateCredit)
             .WithSummary("Creates a credit on an account")
-            .WithDescription("Adds a new credit to the given account, enforcing project ownership and issuance invariants");
+            .WithDescription("Adds a new credit to the given account for the given project, enforcing ownership and issuance invariants");
 
         return group;
     }
 
     private static async Task<Results<Created<CreditResponse>, ProblemHttpResult>> CreateCredit(
         [FromRoute] Guid accountId,
+        [FromRoute] Guid projectId,
         [FromBody] CreateCreditRequest request,
         [FromServices] ICreditCreationService creditCreationService,
         [FromServices] ILoggerFactory loggerFactory,
@@ -46,14 +47,12 @@ public static class CreateCreditEndpoint
             RetiredAt = null
         };
 
-        var serviceResult = await creditCreationService.CreateCredit(accountId, credit, cancellationToken);
+        var serviceResult = await creditCreationService.CreateCredit(accountId, projectId, credit, cancellationToken);
 
         logger.LogInformation("Endpoint Completed");
 
         if (serviceResult.HasFailed())
-        {
             return serviceResult.ToProblemResult();
-        }
 
         var creditResponse = credit.ToResponse();
 

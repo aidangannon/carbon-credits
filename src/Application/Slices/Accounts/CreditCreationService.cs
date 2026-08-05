@@ -6,14 +6,18 @@ namespace Application.Slices.Accounts;
 
 public interface ICreditCreationService
 {
-    Task<Result<Account>> CreateCredit(Guid accountId, Credit credit, CancellationToken cancellationToken);
+    Task<Result<Account>> CreateCredit(Guid accountId, Guid projectId, Credit credit, CancellationToken cancellationToken);
 }
 
 public class CreditCreationService(IAccountRepository accountRepository, IProjectRepository projectRepository) : ICreditCreationService
 {
-    public async Task<Result<Account>> CreateCredit(Guid accountId, Credit credit, CancellationToken cancellationToken)
+    public async Task<Result<Account>> CreateCredit(Guid accountId, Guid projectId, Credit credit, CancellationToken cancellationToken)
     {
-        var projectResult = await projectRepository.GetByIdAsync(credit.ProjectId, cancellationToken);
+        var accountCheck = await accountRepository.GetByIdAsync(accountId, cancellationToken);
+        if (accountCheck.HasFailed())
+            return Result<Account>.Err(accountCheck.Error);
+
+        var projectResult = await projectRepository.GetByIdAsync(projectId, cancellationToken);
         if (projectResult.HasFailed())
             return Result<Account>.Err(projectResult.Error);
 
