@@ -46,17 +46,6 @@ public partial class Create_Credit
     }
 
     [Scenario]
-    public Task When_ProjectId_Does_Not_Match_The_Project_Error_Should_Be_Returned()
-    {
-        return Runner.RunScenarioAsync(
-            given => An_Account_Exists(),
-            and => A_Project_Exists_For_The_Credit(),
-            when => A_Create_Credit_Request_Is_Sent_With_Mismatching_Project_Id(),
-            then => HttpSteps.The_Response_Should_Have_Problem_Details_With_Status_STATUS_And_Detail_DETAIL(HttpStatusCode.UnprocessableEntity, CreditErrors.ProjectMismatch, _httpResponse!)
-        );
-    }
-
-    [Scenario]
     public Task When_A_Valid_Request_Is_Sent_Credit_Should_Be_Added_To_Account()
     {
         return Runner.RunScenarioAsync(

@@ -8,5 +8,5 @@ public interface IAccountRepository
 {
     Task<Result<Account>> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<Result> SaveAsync(Account account, CancellationToken cancellationToken);
-    Task<Result<Account>> UpdateAsync(Guid id, Func<Account, DomainResult> update, CancellationToken cancellationToken);
+    Task<Result<Account>> AddCreditAsync(Guid accountId, Project project, Credit credit, CancellationToken cancellationToken);
 }

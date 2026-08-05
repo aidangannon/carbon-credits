@@ -15,14 +15,18 @@ public class CreditCreationService(IAccountRepository accountRepository, IProjec
     {
         var accountCheck = await accountRepository.GetByIdAsync(accountId, cancellationToken);
         if (accountCheck.HasFailed())
+        {
             return Result<Account>.Err(accountCheck.Error);
+        }
 
         var projectResult = await projectRepository.GetByIdAsync(projectId, cancellationToken);
         if (projectResult.HasFailed())
+        {
             return Result<Account>.Err(projectResult.Error);
+        }
 
         var project = projectResult.Unwrap();
 
-        return await accountRepository.UpdateAsync(accountId, account => account.Create(project, credit), cancellationToken);
+        return await accountRepository.AddCreditAsync(accountId, project, credit, cancellationToken);
     }
 }

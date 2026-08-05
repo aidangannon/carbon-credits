@@ -32,7 +32,7 @@ public static class AccountClientExtensions
     {
         var request = new HttpRequestMessage
         {
-            RequestUri = new Uri($"/accounts/{accountId}/projects/{projectId}/credits"),
+            RequestUri = new Uri($"/accounts/{accountId}/credits"),
             Method = HttpMethod.Post,
             Content = JsonContent.Create(body)
         };
