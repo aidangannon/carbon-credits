@@ -1,16 +1,6 @@
-# Architecture
+# Docs
 
-## Repository Structure
-(link to repository structure)
-
-# Coding standards
-
-## Endpoints
-
-## Ioc
-
-## Application layer
-
-## 
-
-# Functionality 
+| Section | Index |
+|---|---|
+| Architecture | [Architecture Index](./architecture/index.md) |
+| Coding Standards | [Coding Standards Index](./coding-standards/index.md) |
