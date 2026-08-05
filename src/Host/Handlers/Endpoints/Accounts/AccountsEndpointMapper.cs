@@ -8,6 +8,7 @@ public static class AccountsEndpointMapper
             .MapGroup("accounts")
             .MapGetAccountById()
             .MapCreateAccount()
+            .MapCreateCredit()
             .WithTags("Accounts");
     }
 }
