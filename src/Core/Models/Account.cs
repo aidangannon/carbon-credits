@@ -1,3 +1,6 @@
+using Core.Errors;
+using Core.Result;
+
 namespace Core.Models;
 
 public class Account
@@ -13,7 +16,18 @@ public class Account
     {
     }
 
-    public void Create(Project project, Credit credit)
+    public DomainResult Create(Project project, Credit credit)
     {
+        if (credit.RetiredAt is not null)
+            return DomainResult.Err(CreditErrors.CannotCreateRetired);
+
+        if (credit.IssuedAt > DateTime.UtcNow)
+            return DomainResult.Err(CreditErrors.IssuedInFuture);
+
+        if (credit.ProjectId != project.Id)
+            return DomainResult.Err(CreditErrors.ProjectMismatch);
+
+        _credits.Add(credit);
+        return DomainResult.Ok();
     }
 }
