@@ -13,20 +13,18 @@ public class CreditCreationService(IAccountRepository accountRepository, IProjec
 {
     public async Task<Result<Account>> CreateCredit(Guid accountId, Guid projectId, Credit credit, CancellationToken cancellationToken)
     {
-        var accountCheck = await accountRepository.GetByIdAsync(accountId, cancellationToken);
-        if (accountCheck.HasFailed())
-        {
-            return Result<Account>.Err(accountCheck.Error);
-        }
+        var accountResult = await accountRepository.GetByIdAsync(accountId, cancellationToken);
+        if (accountResult.HasFailed())
+            return Result<Account>.Err(accountResult.Error);
 
         var projectResult = await projectRepository.GetByIdAsync(projectId, cancellationToken);
         if (projectResult.HasFailed())
-        {
             return Result<Account>.Err(projectResult.Error);
-        }
 
-        var project = projectResult.Unwrap();
+        var canCreate = accountResult.Unwrap().CanCreate(projectResult.Unwrap(), credit);
+        if (canCreate.HasFailed())
+            return Result<Account>.Err(canCreate.Error);
 
-        return await accountRepository.AddCreditAsync(accountId, project, credit, cancellationToken);
+        return await accountRepository.AddCreditAsync(accountId, credit, cancellationToken);
     }
 }
