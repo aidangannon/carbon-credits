@@ -5,6 +5,7 @@ using Crosscutting.Options;
 using FluentValidation;
 using Host.Models;
 using Host.Validators;
+using Persistence;
 using Persistence.Adapters;
 using FileOptions = Crosscutting.Options.FileOptions;
 
@@ -32,6 +33,7 @@ public static class DependencyExtensions
    public static IServiceCollection AddPersistence(this IServiceCollection services)
    {
        return services
+           .AddSingleton<IFileStore, FileStore>()
            .AddSingleton<IAccountRepository, FileAccountRepository>()
            .AddSingleton<IProjectRepository, FileProjectRepository>();
    }

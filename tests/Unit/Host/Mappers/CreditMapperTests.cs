@@ -3,6 +3,7 @@ using AwesomeAssertions;
 using AwesomeAssertions.Execution;
 using Core.Models;
 using Host.Mappers.Accounts;
+using Host.Models;
 
 namespace Unit.Host.Mappers;
 
@@ -37,5 +38,19 @@ public class CreditMapperTests
             .RetiredAt
             .Should()
             .BeNull();
+    }
+
+    [Fact]
+    public void ToCredit_ShouldMapAllFields()
+    {
+        var request = _fixture.Create<CreateCreditRequest>();
+
+        var credit = request.ToCredit();
+
+        using var scope = new AssertionScope();
+        credit.Id.Should().NotBe(Guid.Empty);
+        credit.IssuedAt.Should().Be(request.IssuedAt);
+        credit.ProjectId.Should().Be(request.ProjectId);
+        credit.RetiredAt.Should().BeNull();
     }
 }

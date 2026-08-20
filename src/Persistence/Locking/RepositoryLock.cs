@@ -5,11 +5,11 @@ namespace Persistence.Locking;
 /// <summary>Per-key async mutual exclusion for repositories.</summary>
 public class RepositoryLock
 {
-    private readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new();
 
-    public async Task<IAsyncDisposable> AcquireAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IAsyncDisposable> AcquireAsync(string partition, CancellationToken cancellationToken)
     {
-        var semaphore = _locks.GetOrAdd(id, _ => new SemaphoreSlim(1, 1));
+        var semaphore = _locks.GetOrAdd(partition, _ => new SemaphoreSlim(1, 1));
         await semaphore.WaitAsync(cancellationToken);
         return new WriteLock(semaphore);
     }

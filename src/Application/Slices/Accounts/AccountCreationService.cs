@@ -15,11 +15,6 @@ public class AccountCreationService(IAccountRepository accountRepository) : IAcc
     {
         var result = await accountRepository.SaveAsync(account, cancellationToken);
 
-        if (result.HasFailed())
-        {
-            return Result<Account>.Err(result.Error);
-        }
-
-        return Result<Account>.Ok(account);
+        return result.HasFailed() ? Result<Account>.Err(result.Error) : Result<Account>.Ok(account);
     }
 }
