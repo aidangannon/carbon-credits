@@ -36,4 +36,31 @@ public class Account
         _credits.Add(credit);
         return DomainResult.Ok();
     }
+
+    public DomainResult RetireCredit(Guid creditId)
+    {
+        if (CreatedAt > DateTime.UtcNow)
+        {
+            return DomainResult.Err(AccountErrors.CreatedInFuture);
+        }
+
+        var credit = _credits.FirstOrDefault(c => c.Id == creditId);
+        if (credit is null)
+        {
+            return DomainResult.Err(CreditErrors.NotFound);
+        }
+
+        if (credit.IssuedAt > DateTime.UtcNow)
+        {
+            return DomainResult.Err(CreditErrors.IssuedInFuture);
+        }
+
+        if (credit.RetiredAt is not null)
+        {
+            return DomainResult.Err(CreditErrors.AlreadyRetired);
+        }
+
+        credit.RetiredAt = DateTime.UtcNow;
+        return DomainResult.Ok();
+    }
 }
