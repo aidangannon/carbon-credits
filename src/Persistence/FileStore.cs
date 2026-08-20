@@ -38,7 +38,7 @@ public class FileStore : IFileStore
     /// <summary>Locks the record's partition, validates the tracked change against the current etag and persists the value.</summary>
     public async Task<Result> SaveAsync<T>(string path, T value, CancellationToken cancellationToken)
     {
-        await using var _ = await _lock.AcquireAsync(path, cancellationToken);
+        await using var partitionLock = await _lock.AcquireAsync(path, cancellationToken);
 
         _changes.TryGetValue(path, out var trackedMeta);
 
