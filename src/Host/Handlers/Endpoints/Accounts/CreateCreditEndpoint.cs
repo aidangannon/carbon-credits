@@ -1,5 +1,4 @@
 using Application.Slices.Accounts;
-using Core.Models;
 using Host.Constants;
 using Host.Extensions;
 using Host.Mappers.Accounts;
@@ -39,13 +38,7 @@ public static class CreateCreditEndpoint
 
         logger.LogInformation("Endpoint Called");
 
-        var credit = new Credit
-        {
-            Id = Guid.NewGuid(),
-            IssuedAt = request.IssuedAt,
-            ProjectId = request.ProjectId,
-            RetiredAt = null
-        };
+        var credit = request.ToCredit();
 
         var serviceResult = await creditCreationService.CreateCredit(accountId, request.ProjectId, credit, cancellationToken);
 

@@ -15,4 +15,15 @@ public static class CreditMapper
             RetiredAt = credit.RetiredAt
         };
     }
+
+    public static Credit ToCredit(this CreateCreditRequest request)
+    {
+        return new Credit
+        {
+            Id = Guid.NewGuid(),
+            IssuedAt = request.IssuedAt,
+            ProjectId = request.ProjectId,
+            RetiredAt = null
+        };
+    }
 }

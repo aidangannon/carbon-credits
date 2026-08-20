@@ -16,7 +16,7 @@ public class Account
     {
     }
 
-    public DomainResult Create(Project project, Credit credit)
+    public DomainResult AddCredit(Project project, Credit credit)
     {
         if (credit.RetiredAt is not null)
         {

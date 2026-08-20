@@ -22,6 +22,8 @@ Duplication across slices is acceptable. Coupling between slices is not. DRY is 
 
 Business rules and state transitions live on the aggregate or model, not in the service. Services are a script: load, act, save. The aggregate owns the invariants so they are testable without infrastructure and enforced everywhere they are used, not just in one service.
 
+Data access should stay generic and boring - loading and saving a whole aggregate by id, with the storage mechanics (locking, versioning, serialization) shared across every aggregate rather than reimplemented per feature. If a use case seems to need filtering, partial updates, or bespoke queries, that's a signal an invariant is missing from the model or the aggregate boundary is wrong - not that the data layer should grow query capability. See [Architecture: Ports & Adapters](../architecture/repository_structure.md#retrieval-is-generic-invariants-are-not) for how this plays out in the persistence layer.
+
 ## Test First
 
 Write acceptance tests before writing implementation. Acceptance tests are the living gospel of how the service behaves - they document exactly what the API does, including all edge cases, in plain language.
