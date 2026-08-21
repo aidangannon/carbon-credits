@@ -14,32 +14,29 @@ public class FakeLogCollector
     public IReadOnlyList<FakeLogRecord> GetSnapshot() => [.. _logs];
 }
 
-public class FakeLogger(FakeLogCollector collector) : ILogger
+public class FakeLogger(FakeLogCollector collector, LoggerExternalScopeProvider scopeProvider) : ILogger
 {
-    private readonly List<object?> _scopes = [];
-
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-    {
-        _scopes.Add(state);
-        return new ScopeDisposable(() => _scopes.Remove(state));
-    }
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => scopeProvider.Push(state);
 
     public bool IsEnabled(LogLevel logLevel) => true;
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        collector.Add(new FakeLogRecord(logLevel, formatter(state, exception), [.. _scopes]));
-    }
+        var scopes = new List<object?>();
+        scopeProvider.ForEachScope((scope, list) => list.Add(scope), scopes);
 
-    private sealed class ScopeDisposable(Action onDispose) : IDisposable
-    {
-        public void Dispose() => onDispose();
+        collector.Add(new FakeLogRecord(logLevel, formatter(state, exception), scopes));
     }
 }
 
 public class FakeLoggerProvider(FakeLogCollector collector) : ILoggerProvider
 {
-    public ILogger CreateLogger(string categoryName) => new FakeLogger(collector);
+    // LoggerExternalScopeProvider is the same AsyncLocal-backed scope stack ASP.NET Core's
+    // built-in Console/EventLog loggers use, so concurrent requests each see their own
+    // logical scope chain instead of racing on shared mutable state.
+    private readonly LoggerExternalScopeProvider _scopeProvider = new();
+
+    public ILogger CreateLogger(string categoryName) => new FakeLogger(collector, _scopeProvider);
     public void Dispose()
     {
         GC.SuppressFinalize(this);

@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using System.Text.Json;
 using Acceptance.Infrastructure;
 using Acceptance.Infrastructure.Extensions;
 using AutoFixture;
@@ -10,6 +9,7 @@ using Host.Models;
 using LightBDD.XUnit3;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Persistence;
 using FileOptions = Crosscutting.Options.FileOptions;
 
 namespace Acceptance.Features.Accounts;
@@ -25,7 +25,7 @@ public partial class Create_Credit : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly JsonSerializerOptions _jsonOptions;
+    private readonly IFileStore _fileStore;
     private const string OperationName = "CreateCredit";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -36,7 +36,7 @@ public partial class Create_Credit : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+        _fileStore = _services.GetRequiredService<IFileStore>();
 
         _accountId = Guid.NewGuid();
         _projectId = Guid.NewGuid();
@@ -48,29 +48,23 @@ public partial class Create_Credit : FeatureFixture
         };
     }
 
-    private Task An_Account_Exists()
+    private async Task An_Account_Exists()
     {
         var account = _fixture.Build<Account>()
             .With(a => a.Id, _accountId)
             .With(a => a.Credits, Array.Empty<Credit>())
             .Create();
 
-        var accountText = JsonSerializer.Serialize(account, _jsonOptions);
-        File.WriteAllText(_basePath + $"/accounts/{_accountId}", accountText);
-
-        return Task.CompletedTask;
+        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", account, CancellationToken.None);
     }
 
-    private Task A_Project_Exists_For_The_Credit()
+    private async Task A_Project_Exists_For_The_Credit()
     {
         var project = _fixture.Build<Project>()
             .With(p => p.Id, _projectId)
             .Create();
 
-        var projectText = JsonSerializer.Serialize(project, _jsonOptions);
-        File.WriteAllText(_basePath + $"/projects/{_projectId}", projectText);
-
-        return Task.CompletedTask;
+        await _fileStore.SaveAsync($"{_basePath}/projects/{_projectId}", project, CancellationToken.None);
     }
 
     private async Task A_Create_Credit_Request_Is_Sent(Guid accountId, DateTime issuedAt, Guid projectId)

@@ -29,7 +29,11 @@ public class CreditCreationService(IAccountRepository accountRepository, IProjec
 
         var project = projectResult.Unwrap();
 
-        account.AddCredit(project, credit);
+        var domainResult = account.AddCredit(project, credit);
+        if (domainResult.HasFailed())
+        {
+            return Result<Account>.Err(domainResult.Error!);
+        }
 
         var saveResult = await accountRepository.SaveAsync(account, cancellationToken);
 

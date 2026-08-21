@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using System.Text.Json;
 using Acceptance.Infrastructure;
 using Acceptance.Infrastructure.Extensions;
 using AutoFixture;
@@ -8,6 +7,7 @@ using Host.Models;
 using LightBDD.XUnit3;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Persistence;
 using FileOptions = Crosscutting.Options.FileOptions;
 
 namespace Acceptance.Features.Projects;
@@ -22,7 +22,7 @@ public partial class Get_Project_By_Id : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly JsonSerializerOptions _options;
+    private readonly IFileStore _fileStore;
     private const string OperationName = "GetProjectById";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -33,8 +33,7 @@ public partial class Get_Project_By_Id : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-
-        _options = new JsonSerializerOptions { WriteIndented = true };
+        _fileStore = _services.GetRequiredService<IFileStore>();
 
         _scopes = new Dictionary<string, string>
         {
@@ -53,8 +52,7 @@ public partial class Get_Project_By_Id : FeatureFixture
         _project = _fixture.Create<Project>();
         _projectId = _project.Id;
 
-        var projectText = JsonSerializer.Serialize(_project, _options);
-        File.WriteAllText(_basePath + $"/projects/{_projectId}", projectText);
+        await _fileStore.SaveAsync($"{_basePath}/projects/{_projectId}", _project, CancellationToken.None);
     }
 
     private async Task The_Response_Equals_Project()

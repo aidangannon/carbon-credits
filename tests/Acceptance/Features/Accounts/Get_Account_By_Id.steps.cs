@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using System.Text.Json;
 using Acceptance.Infrastructure;
 using Acceptance.Infrastructure.Extensions;
 using AutoFixture;
@@ -8,6 +7,7 @@ using Host.Models;
 using LightBDD.XUnit3;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Persistence;
 using FileOptions = Crosscutting.Options.FileOptions;
 
 namespace Acceptance.Features.Accounts;
@@ -22,7 +22,7 @@ public partial class Get_Account_By_Id : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly JsonSerializerOptions _options;
+    private readonly IFileStore _fileStore;
     private const string OperationName = "GetAccountById";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -33,11 +33,7 @@ public partial class Get_Account_By_Id : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-
-        _options = new JsonSerializerOptions()
-        {
-            WriteIndented = true
-        };
+        _fileStore = _services.GetRequiredService<IFileStore>();
 
         _scopes = new Dictionary<string, string>()
         {
@@ -56,8 +52,7 @@ public partial class Get_Account_By_Id : FeatureFixture
         _account = _fixture.Create<Account>();
         _accountId = _account.Id;
 
-        var accountText = JsonSerializer.Serialize(_account, _options);
-        File.WriteAllText(_basePath + $"/accounts/{_accountId}", accountText);
+        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", _account, CancellationToken.None);
     }
 
     private async Task The_Response_Equals_Account()

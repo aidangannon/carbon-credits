@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Services
     .AddExceptionHandler<GlobalErrorHandler>()
+    .AddProblemDetails()
     .AddJwtAuthentication(builder.Configuration)
     .AddOpenApi()
     .AddApplication()
@@ -20,6 +21,7 @@ builder
 var application = builder.Build();
 
 application
+    .UseExceptionHandler()
     .UseAuthentication()
     .UseAuthorization();
 
