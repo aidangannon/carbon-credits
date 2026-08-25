@@ -17,6 +17,9 @@ public class ConfiguredLightBddScope : LightBddScope
     protected override void OnSetUp()
     {
         TestWebApplicationFactory.Instance = new TestWebApplicationFactory();
+
+        // force ioc container to build deps chain before tests run
+        _ = TestWebApplicationFactory.Instance.Server;
     }
 
     protected override void OnTearDown()

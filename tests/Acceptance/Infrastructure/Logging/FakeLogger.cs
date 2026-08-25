@@ -31,9 +31,6 @@ public class FakeLogger(FakeLogCollector collector, LoggerExternalScopeProvider 
 
 public class FakeLoggerProvider(FakeLogCollector collector) : ILoggerProvider
 {
-    // LoggerExternalScopeProvider is the same AsyncLocal-backed scope stack ASP.NET Core's
-    // built-in Console/EventLog loggers use, so concurrent requests each see their own
-    // logical scope chain instead of racing on shared mutable state.
     private readonly LoggerExternalScopeProvider _scopeProvider = new();
 
     public ILogger CreateLogger(string categoryName) => new FakeLogger(collector, _scopeProvider);

@@ -18,6 +18,9 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         OverrideConfiguration();
         SetupDb();
 
+        // set cwd for file writing
+        builder.UseContentRoot(AppContext.BaseDirectory);
+
         builder.ConfigureServices(services =>
         {
             var collector = new FakeLogCollector();
