@@ -64,7 +64,7 @@ public partial class Transfer_Credit
     {
         return Runner.RunScenarioAsync(
             given => An_Account_Exists(),
-            and => A_Recipient_Account_Exists_Created_At(DateTime.UtcNow.AddDays(1)),
+            and => A_Recipient_Account_Exists_Created_At_CREATED(DateTime.UtcNow.AddDays(1)),
             and => A_Project_Exists_For_The_Credit(),
             and => A_Credit_Exists_On_The_Account(),
             when => A_Transfer_Credit_Request_Is_Sent(_accountId, _creditId, _recipientAccountId),

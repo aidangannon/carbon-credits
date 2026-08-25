@@ -62,4 +62,12 @@ public class ErrorCodeMapperTests
 
         result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
     }
+
+    [Fact]
+    public void ToErrorDetails_WhenAccountLeftInPartialTransferState_ReturnsWith500()
+    {
+        var result = ErrorCodeMapper.ToErrorDetails($"{AccountErrors.PartialTransferState}: account id: {Guid.NewGuid()} and account id: {Guid.NewGuid()} have been left in a partial state: some inner error");
+
+        result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+    }
 }
