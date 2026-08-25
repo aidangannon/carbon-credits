@@ -52,7 +52,7 @@ public partial class Create_Credit
             given => An_Account_Exists(),
             and => A_Project_Exists_For_The_Credit(),
             when => A_Create_Credit_Request_Is_Sent(_accountId, _issuedAt, _projectId),
-            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.Created, _httpResponse!),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.Created, _httpResponse!),
             and => The_Response_Should_Reflect_The_Created_Credit(),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCalledMessage, _scopes, _services),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCompletedMessage, _scopes, _services)

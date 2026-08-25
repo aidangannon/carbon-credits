@@ -15,7 +15,7 @@ public partial class Create_Project
 
         return Runner.RunScenarioAsync(
             when => A_Create_Project_Request_Is_Sent(_name, _country, _type),
-            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.BadRequest, _httpResponse!),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.BadRequest, _httpResponse!),
             and => HttpSteps.The_Response_Body_Should_Be_Message_MESSAGE("Name", _httpResponse!)
         );
     }
@@ -27,7 +27,7 @@ public partial class Create_Project
 
         return Runner.RunScenarioAsync(
             when => A_Create_Project_Request_Is_Sent(_name, _country, _type),
-            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.BadRequest, _httpResponse!),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.BadRequest, _httpResponse!),
             and => HttpSteps.The_Response_Body_Should_Be_Message_MESSAGE("Country", _httpResponse!)
         );
     }
@@ -39,7 +39,7 @@ public partial class Create_Project
 
         return Runner.RunScenarioAsync(
             when => A_Create_Project_Request_Is_Sent(_name, _country, _type),
-            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.BadRequest, _httpResponse!),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.BadRequest, _httpResponse!),
             and => HttpSteps.The_Response_Body_Should_Be_Message_MESSAGE("Type", _httpResponse!)
         );
     }
@@ -49,7 +49,7 @@ public partial class Create_Project
     {
         return Runner.RunScenarioAsync(
             when => A_Create_Project_Request_Is_Sent(_name, _country, _type),
-            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.Created, _httpResponse!),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.Created, _httpResponse!),
             and => The_Response_Should_Reflect_The_Create_Request(),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCalledMessage, _scopes, _services),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCompletedMessage, _scopes, _services)

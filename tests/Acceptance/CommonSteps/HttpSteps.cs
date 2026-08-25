@@ -7,22 +7,22 @@ namespace Acceptance.CommonSteps;
 
 public static class HttpSteps
 {
-    public static Task The_Response_Should_Have_Status_Code_STATUS_CODE(
-        HttpStatusCode statusCode,
+    public static Task The_Response_Should_Have_Status_Code_STATUS(
+        HttpStatusCode status,
         HttpResponseMessage response
     )
     {
-        response.StatusCode.Should().Be(statusCode);
+        response.StatusCode.Should().Be(status);
 
         return Task.CompletedTask;
     }
 
-    public static Task The_Response_Should_Not_Have_Status_Code_STATUS_CODE(
-        HttpStatusCode statusCode,
+    public static Task The_Response_Should_Not_Have_Status_Code_STATUS(
+        HttpStatusCode status,
         HttpResponseMessage response
     )
     {
-        response.StatusCode.Should().NotBe(statusCode);
+        response.StatusCode.Should().NotBe(status);
 
         return Task.CompletedTask;
     }
