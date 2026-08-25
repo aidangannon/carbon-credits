@@ -15,7 +15,9 @@ public static class GetAccountByIdEndpoint
         application
             .MapGet("{id:guid}", GetAccountById)
             .WithSummary("Gets account by id")
-            .WithDescription("For retieving account by id, reutrning account and its active credits, if fails then returns 404");
+            .WithDescription("For retieving account by id, reutrning account and its credits, if fails then returns 404. " +
+                              "Credits are filtered by the includeRetiredCredits and includeFutureCredits query flags - " +
+                              "retired credits are included by default, credits issued in the future are excluded by default.");
 
         return application;
     }
@@ -24,7 +26,9 @@ public static class GetAccountByIdEndpoint
         [FromRoute] Guid id,
         [FromServices] IAccountRetrievalService accountRetrievalService,
         [FromServices] ILoggerFactory loggerFactory,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        [FromQuery] bool includeRetiredCredits = true,
+        [FromQuery] bool includeFutureCredits = false
     )
     {
         var logger = loggerFactory.CreateLogger(LoggingOperations.GetAccountById);
@@ -36,7 +40,7 @@ public static class GetAccountByIdEndpoint
 
         logger.LogInformation("Endpoint Called");
 
-        var serviceResult = await accountRetrievalService.GetAccountById(id, cancellationToken);
+        var serviceResult = await accountRetrievalService.GetAccountById(id, includeRetiredCredits, includeFutureCredits, cancellationToken);
 
         logger.LogInformation("Endpoint Completed");
 
