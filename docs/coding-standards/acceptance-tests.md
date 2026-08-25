@@ -19,6 +19,10 @@ See [`Create_Account.cs`](/tests/Acceptance/Features/Accounts/Create_Account.cs)
 
 Each `.steps.cs` file should own its own steps. Steps that retrieve or manipulate the same entity may be duplicated across slices - this is intentional. It keeps each slice open-closed: both can change independently without being coupled to each other. DRY is secondary to isolation here.
 
+## Parameterised Step Names
+
+When a step method takes a parameter, suffix the method name with the parameter's name in uppercase (e.g. `A_Recipient_Account_Exists_Created_At_CREATED(DateTime createdAt)`). LightBDD matches the uppercase segment of the method name against the argument passed at the call site and renders it in the readable scenario output, so the value shows up inline instead of being hidden. See [`HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE`](/tests/Acceptance/CommonSteps/HttpSteps.cs) for the established pattern.
+
 ## Common Steps
 
 [`CommonSteps/`](/tests/Acceptance/CommonSteps/) contains static steps for crosscutting concerns only, such as asserting HTTP status codes or checking log output. See [`HttpSteps.cs`](/tests/Acceptance/CommonSteps/HttpSteps.cs) and [`LogSteps.cs`](/tests/Acceptance/CommonSteps/LogSteps.cs).
