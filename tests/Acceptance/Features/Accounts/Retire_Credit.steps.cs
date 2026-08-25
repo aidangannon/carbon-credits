@@ -87,11 +87,14 @@ public partial class Retire_Credit : FeatureFixture
         _httpResponse = await _client.RetireCredit(accountId, creditId);
     }
 
-    private async Task The_Response_Should_Reflect_The_Retired_Credit()
+    private async Task The_Credit_Should_Be_Retired_On_The_Account()
     {
-        var creditResponse = await _httpResponse!.Content.ReadFromJsonAsync<CreditResponse>();
+        var getResponse = await _client.GetAccountById(_accountId);
+        var accountResponse = await getResponse.Content.ReadFromJsonAsync<AccountResponse>();
 
-        creditResponse!.Id.Should().Be(_creditId);
+        var creditResponse = accountResponse!.Credits.Single(c => c.Id == _creditId);
+        creditResponse.ProjectId.Should().Be(_credit!.ProjectId);
+        creditResponse.IssuedAt.Should().Be(_credit.IssuedAt);
         creditResponse.RetiredAt.Should().NotBeNull();
         creditResponse.RetiredAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
     }

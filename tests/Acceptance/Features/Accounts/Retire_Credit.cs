@@ -72,8 +72,8 @@ public partial class Retire_Credit
         return Runner.RunScenarioAsync(
             given => An_Account_Exists(),
             when => A_Retire_Credit_Request_Is_Sent(_accountId, _creditId),
-            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.OK, _httpResponse!),
-            and => The_Response_Should_Reflect_The_Retired_Credit(),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.NoContent, _httpResponse!),
+            and => The_Credit_Should_Be_Retired_On_The_Account(),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCalledMessage, _scopes, _services),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCompletedMessage, _scopes, _services)
         );

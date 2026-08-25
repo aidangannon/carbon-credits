@@ -44,8 +44,8 @@ public static class AccountClientExtensions
     {
         var request = new HttpRequestMessage
         {
-            RequestUri = new Uri($"/accounts/{accountId}/credits/{creditId}/retire"),
-            Method = HttpMethod.Post
+            RequestUri = new Uri($"/accounts/{accountId}/credits/{creditId}"),
+            Method = HttpMethod.Delete
         };
 
         return await client.SendAsync(request);

@@ -1,8 +1,6 @@
 using Application.Slices.Accounts;
 using Host.Constants;
 using Host.Extensions;
-using Host.Mappers.Accounts;
-using Host.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,14 +11,14 @@ public static class RetireCreditEndpoint
     public static RouteGroupBuilder MapRetireCredit(this RouteGroupBuilder group)
     {
         group
-            .MapPost("{accountId:guid}/credits/{creditId:guid}/retire", RetireCredit)
+            .MapDelete("{accountId:guid}/credits/{creditId:guid}", RetireCredit)
             .WithSummary("Retires a credit on an account")
             .WithDescription("Marks the given credit on the given account as retired, enforcing account and credit issuance invariants");
 
         return group;
     }
 
-    private static async Task<Results<Ok<CreditResponse>, ProblemHttpResult>> RetireCredit(
+    private static async Task<Results<NoContent, ProblemHttpResult>> RetireCredit(
         [FromRoute] Guid accountId,
         [FromRoute] Guid creditId,
         [FromServices] ICreditRetirementService creditRetirementService,
@@ -47,8 +45,6 @@ public static class RetireCreditEndpoint
             return serviceResult.ToProblemResult();
         }
 
-        var creditResponse = serviceResult.Unwrap().ToResponse();
-
-        return TypedResults.Ok(creditResponse);
+        return TypedResults.NoContent();
     }
 }
