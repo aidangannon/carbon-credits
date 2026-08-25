@@ -40,7 +40,7 @@ public static class GetAccountByIdEndpoint
 
         logger.LogInformation("Endpoint Called");
 
-        var serviceResult = await accountRetrievalService.GetAccountById(id, cancellationToken);
+        var serviceResult = await accountRetrievalService.GetAccountById(id, includeRetiredCredits, includeFutureCredits, cancellationToken);
 
         logger.LogInformation("Endpoint Completed");
 
@@ -49,7 +49,7 @@ public static class GetAccountByIdEndpoint
             return serviceResult.ToProblemResult();
         }
 
-        var accountResponse = serviceResult.Unwrap().ToResponse(includeRetiredCredits, includeFutureCredits);
+        var accountResponse = serviceResult.Unwrap().ToResponse();
 
         return TypedResults.Ok(accountResponse);
     }

@@ -18,12 +18,12 @@ public class Account
 
     public DomainResult AddCredit(Project project, Credit credit)
     {
-        if (credit.IsRetired)
+        if (credit.RetiredAt is not null)
         {
             return DomainResult.Err(CreditErrors.CannotCreateRetired);
         }
 
-        if (credit.IsIssuedInFuture)
+        if (credit.IssuedAt > DateTime.UtcNow)
         {
             return DomainResult.Err(CreditErrors.IssuedInFuture);
         }
@@ -35,5 +35,12 @@ public class Account
 
         _credits.Add(credit);
         return DomainResult.Ok();
+    }
+
+    public IReadOnlyCollection<Credit> GetCredits(bool includeRetiredCredits, bool includeFutureCredits)
+    {
+        return _credits
+            .Where(c => (includeRetiredCredits || c.RetiredAt is null) && (includeFutureCredits || c.IssuedAt <= DateTime.UtcNow))
+            .ToList();
     }
 }

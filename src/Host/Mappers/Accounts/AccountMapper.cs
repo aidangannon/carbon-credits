@@ -5,18 +5,14 @@ namespace Host.Mappers.Accounts;
 
 public static class AccountMapper
 {
-    public static AccountResponse ToResponse(this Account account, bool includeRetiredCredits = true, bool includeFutureCredits = false)
+    public static AccountResponse ToResponse(this Account account)
     {
-        var credits = account.Credits.Where(c =>
-            (includeRetiredCredits || !c.IsRetired) &&
-            (includeFutureCredits || !c.IsIssuedInFuture));
-
         return new AccountResponse
         {
             Id = account.Id,
             Name = account.Name,
             CreatedAt = account.CreatedAt,
-            Credits = credits.Select(c => c.ToResponse()).ToList()
+            Credits = account.Credits.Select(c => c.ToResponse()).ToList()
         };
     }
 

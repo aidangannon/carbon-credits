@@ -131,4 +131,3 @@ public partial class Get_Account_By_Id : FeatureFixture
         accountResponse!.Credits.Should().NotContain(c => c.Id == creditId);
     }
 }
-
