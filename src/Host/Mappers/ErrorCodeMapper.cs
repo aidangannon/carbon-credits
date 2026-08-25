@@ -10,9 +10,12 @@ public static class ErrorCodeMapper
     {
         AccountErrors.NotFound => new ErrorDetails(StatusCodes.Status404NotFound, "Not found"),
         ProjectErrors.NotFound => new ErrorDetails(StatusCodes.Status404NotFound, "Not found"),
+        CreditErrors.NotFound => new ErrorDetails(StatusCodes.Status404NotFound, "Not found"),
         CreditErrors.CannotCreateRetired => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
         CreditErrors.IssuedInFuture => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
         CreditErrors.ProjectMismatch => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
+        CreditErrors.ProjectNotFoundMustRetire => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
+        AccountErrors.CreatedInFuture => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
         _ => throw new InvalidOperationException($"Unhandled error code: {errorCode}")
     };
 }
