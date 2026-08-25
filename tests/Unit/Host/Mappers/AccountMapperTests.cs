@@ -14,7 +14,10 @@ public class AccountMapperTests
     [Fact]
     public void ToResponse_ShouldMapAllFields()
     {
-        var credit = _fixture.Create<Credit>();
+        var credit = _fixture
+            .Build<Credit>()
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-1))
+            .Create();
         var account = _fixture
             .Build<Account>()
             .With(a => a.Credits, [credit])
@@ -43,6 +46,111 @@ public class AccountMapperTests
             .Credits
             .Should()
             .BeEmpty();
+    }
+
+    [Fact]
+    public void ToResponse_WhenIncludeRetiredCreditsIsFalse_ShouldExcludeRetiredCredits()
+    {
+        var retiredCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, DateTime.UtcNow.AddDays(-1))
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-2))
+            .Create();
+        var activeCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, (DateTime?)null)
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-2))
+            .Create();
+        var account = _fixture
+            .Build<Account>()
+            .With(a => a.Credits, [retiredCredit, activeCredit])
+            .Create();
+
+        var response = account.ToResponse(includeRetiredCredits: false, includeFutureCredits: true);
+
+        response.Credits.Should().ContainSingle(c => c.Id == activeCredit.Id);
+    }
+
+    [Fact]
+    public void ToResponse_WhenIncludeRetiredCreditsIsTrue_ShouldIncludeRetiredCredits()
+    {
+        var retiredCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, DateTime.UtcNow.AddDays(-1))
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-2))
+            .Create();
+        var account = _fixture
+            .Build<Account>()
+            .With(a => a.Credits, [retiredCredit])
+            .Create();
+
+        var response = account.ToResponse(includeRetiredCredits: true, includeFutureCredits: true);
+
+        response.Credits.Should().ContainSingle(c => c.Id == retiredCredit.Id);
+    }
+
+    [Fact]
+    public void ToResponse_WhenIncludeFutureCreditsIsFalse_ShouldExcludeFutureCredits()
+    {
+        var futureCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, (DateTime?)null)
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(1))
+            .Create();
+        var pastCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, (DateTime?)null)
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-1))
+            .Create();
+        var account = _fixture
+            .Build<Account>()
+            .With(a => a.Credits, [futureCredit, pastCredit])
+            .Create();
+
+        var response = account.ToResponse(includeRetiredCredits: true, includeFutureCredits: false);
+
+        response.Credits.Should().ContainSingle(c => c.Id == pastCredit.Id);
+    }
+
+    [Fact]
+    public void ToResponse_WhenIncludeFutureCreditsIsTrue_ShouldIncludeFutureCredits()
+    {
+        var futureCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, (DateTime?)null)
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(1))
+            .Create();
+        var account = _fixture
+            .Build<Account>()
+            .With(a => a.Credits, [futureCredit])
+            .Create();
+
+        var response = account.ToResponse(includeRetiredCredits: true, includeFutureCredits: true);
+
+        response.Credits.Should().ContainSingle(c => c.Id == futureCredit.Id);
+    }
+
+    [Fact]
+    public void ToResponse_WhenCalledWithDefaults_ShouldIncludeRetiredAndExcludeFutureCredits()
+    {
+        var retiredCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, DateTime.UtcNow.AddDays(-1))
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-2))
+            .Create();
+        var futureCredit = _fixture
+            .Build<Credit>()
+            .With(c => c.RetiredAt, (DateTime?)null)
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(1))
+            .Create();
+        var account = _fixture
+            .Build<Account>()
+            .With(a => a.Credits, [retiredCredit, futureCredit])
+            .Create();
+
+        var response = account.ToResponse();
+
+        response.Credits.Should().ContainSingle(c => c.Id == retiredCredit.Id);
     }
 
     [Fact]

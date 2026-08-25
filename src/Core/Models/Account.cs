@@ -18,12 +18,12 @@ public class Account
 
     public DomainResult AddCredit(Project project, Credit credit)
     {
-        if (credit.RetiredAt is not null)
+        if (credit.IsRetired)
         {
             return DomainResult.Err(CreditErrors.CannotCreateRetired);
         }
 
-        if (credit.IssuedAt > DateTime.UtcNow)
+        if (credit.IsIssuedInFuture)
         {
             return DomainResult.Err(CreditErrors.IssuedInFuture);
         }
