@@ -1,0 +1,25 @@
+name: cicd
+
+on: [push]
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v6
+      - name: install dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.0'
+          cache: true
+      - name: install deps
+        run: dotnet restore
+      - name: build
+        run: dotnet build
+      - name: unit tests
+        run: dotnet test --filter-query "/*/Unit*/*/*" --ignore-exit-code 8
+      - name: acceptance tests
+        run: dotnet test --filter-query "/*/Acceptance*/*/*" --ignore-exit-code 8
