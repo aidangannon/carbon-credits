@@ -14,7 +14,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x.x'
-          cache: true
       - name: install deps
         run: dotnet restore
       - name: build
