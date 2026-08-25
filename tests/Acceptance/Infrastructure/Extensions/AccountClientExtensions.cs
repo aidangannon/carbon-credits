@@ -5,11 +5,24 @@ namespace Acceptance.Infrastructure.Extensions;
 
 public static class AccountClientExtensions
 {
-    public static async Task<HttpResponseMessage> GetAccountById(this HttpClient client, Guid id)
+    public static async Task<HttpResponseMessage> GetAccountById(this HttpClient client, Guid id, bool? includeRetiredCredits = null, bool? includeFutureCredits = null)
     {
+        var query = new List<string>();
+        if (includeRetiredCredits is not null)
+        {
+            query.Add($"includeRetiredCredits={includeRetiredCredits}");
+        }
+
+        if (includeFutureCredits is not null)
+        {
+            query.Add($"includeFutureCredits={includeFutureCredits}");
+        }
+
+        var queryString = query.Count > 0 ? $"?{string.Join("&", query)}" : string.Empty;
+
         var request = new HttpRequestMessage
         {
-            RequestUri = new Uri($"/accounts/{id}"),
+            RequestUri = new Uri($"/accounts/{id}{queryString}", UriKind.Relative),
             Method = HttpMethod.Get
         };
 

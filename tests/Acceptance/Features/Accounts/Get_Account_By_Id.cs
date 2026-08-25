@@ -35,4 +35,48 @@ public partial class Get_Account_By_Id
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCompletedMessage, _scopes, _services)
         );
     }
+
+    [Scenario]
+    public Task When_No_Filters_Are_Specified_Retired_Credits_Should_Be_Included()
+    {
+        return Runner.RunScenarioAsync(
+            given => An_Account_Exists_With_A_Retired_Credit(),
+            when => Get_Account_By_Id_ID_Request_Is_Sent(_accountId),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.OK, _httpResponse!),
+            and => The_Response_Should_Include_The_Credit_ID(_retiredCreditId)
+        );
+    }
+
+    [Scenario]
+    public Task When_No_Filters_Are_Specified_Future_Credits_Should_Be_Excluded()
+    {
+        return Runner.RunScenarioAsync(
+            given => An_Account_Exists_With_A_Future_Credit(),
+            when => Get_Account_By_Id_ID_Request_Is_Sent(_accountId),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.OK, _httpResponse!),
+            and => The_Response_Should_Not_Include_The_Credit_ID(_futureCreditId)
+        );
+    }
+
+    [Scenario]
+    public Task When_Include_Future_Credits_Is_True_Future_Credits_Should_Be_Included()
+    {
+        return Runner.RunScenarioAsync(
+            given => An_Account_Exists_With_A_Future_Credit(),
+            when => Get_Account_By_Id_ID_Request_Is_Sent_With_Filters(_accountId, null, true),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.OK, _httpResponse!),
+            and => The_Response_Should_Include_The_Credit_ID(_futureCreditId)
+        );
+    }
+
+    [Scenario]
+    public Task When_Include_Retired_Credits_Is_False_Retired_Credits_Should_Be_Excluded()
+    {
+        return Runner.RunScenarioAsync(
+            given => An_Account_Exists_With_A_Retired_Credit(),
+            when => Get_Account_By_Id_ID_Request_Is_Sent_With_Filters(_accountId, false, null),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.OK, _httpResponse!),
+            and => The_Response_Should_Not_Include_The_Credit_ID(_retiredCreditId)
+        );
+    }
 }
