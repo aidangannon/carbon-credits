@@ -33,6 +33,15 @@ The same pattern can be applied to the persistence layer if needed.
 
 The rule for what goes here: infrastructure and boilerplate reduction only. No business logic, no assertions, no domain knowledge. Only pull something into infrastructure when there is enough repetition across `.steps.cs` files to warrant it - do not pre-emptively extract.
 
+## Verifying Mutations
+
+For any scenario that adds, updates, or deletes state (e.g. creating a credit, retiring a credit), assert both sides of the mutation:
+
+- **The response** - the immediate HTTP result (status code, and body if one is returned).
+- **The underlying record(s)** - re-fetch the affected aggregate (via its retrieval endpoint, or directly from the store) and assert the persisted state actually reflects the change.
+
+Asserting only the response can pass even if the write never happened or was applied incorrectly. See [`Retire_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Retire_Credit.steps.cs) - the happy-path scenario asserts the `204` response and then re-fetches the account via `GetAccountById` to confirm the credit is actually retired.
+
 ## Summary of Rules
 
 | Rule | Reason |
@@ -41,3 +50,4 @@ The rule for what goes here: infrastructure and boilerplate reduction only. No b
 | Common steps contain no domain logic | Prevents crosscutting files from accumulating business knowledge |
 | Infrastructure hides boilerplate only | Keeps `.steps.cs` files readable without leaking concerns upward |
 | Extract to infrastructure only when repetition warrants it | Avoids premature abstraction |
+| Mutating scenarios assert the response and the persisted record | A correct-looking response doesn't guarantee the write was applied |
