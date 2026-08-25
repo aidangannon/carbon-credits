@@ -19,6 +19,6 @@ jobs:
       - name: build
         run: dotnet build
       - name: unit tests
-        run: dotnet test --filter-query "/*/Unit*/*/*" -v d --ignore-exit-code 8
+        run: dotnet test --filter-query "/*/Unit*/*/*" --output Detailed --ignore-exit-code 8
       - name: acceptance tests
-        run: dotnet test --filter-query "/*/Acceptance*/*/*" -v d --ignore-exit-code 8
+        run: dotnet test --filter-query "/*/Acceptance*/*/*" --output Detailed --ignore-exit-code 8
