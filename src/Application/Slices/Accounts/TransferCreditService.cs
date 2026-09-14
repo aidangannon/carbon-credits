@@ -46,18 +46,12 @@ public class TransferCreditService(IAccountRepository accountRepository, IProjec
             return Result<Account>.Err(domainResult.Error!);
         }
 
-        // Save the recipient first: if the sender save then fails, the credit exists on both accounts rather
-        // than neither, which is the safer partial-failure outcome to be left in.
-        var saveRecipientResult = await accountRepository.SaveAsync(recipient, cancellationToken);
-        if (saveRecipientResult.HasFailed())
+        // Both accounts were tracked by their GetByIdAsync loads above, so this single unit-of-work
+        // save flushes both mutations together (no per-entity ordering control anymore).
+        var saveResult = await accountRepository.SaveAsync(cancellationToken);
+        if (saveResult.HasFailed())
         {
-            return Result<Account>.Err(saveRecipientResult.Error);
-        }
-
-        var saveAccountResult = await accountRepository.SaveAsync(account, cancellationToken);
-        if (saveAccountResult.HasFailed())
-        {
-            return Result<Account>.Err($"{AccountErrors.PartialTransferState}: account id: {account.Id} and account id: {recipient.Id} have been left in a partial state: {saveAccountResult.Error}");
+            return Result<Account>.Err(saveResult.Error);
         }
 
         return Result<Account>.Ok(account);
