@@ -66,7 +66,8 @@ public partial class Retire_Credit : FeatureFixture
             .With(a => a.Credits, new[] { _credit })
             .Create();
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", account, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task An_Account_Exists_With_No_Credits()
@@ -77,7 +78,8 @@ public partial class Retire_Credit : FeatureFixture
             .With(a => a.Credits, Array.Empty<Credit>())
             .Create();
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", account, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Retire_Credit_Request_Is_Sent(Guid accountId, Guid creditId)
