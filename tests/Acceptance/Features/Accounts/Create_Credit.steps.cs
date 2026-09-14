@@ -25,7 +25,8 @@ public partial class Create_Credit : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly IFileStore<Project> _fileStore;
+    private readonly IFileStore<Account> _accountFileStore;
+    private readonly IFileStore<Project> _projectFileStore;
     private const string OperationName = "CreateCredit";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -36,7 +37,8 @@ public partial class Create_Credit : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _fileStore = _services.GetRequiredService<IFileStore<Project>>();
+        _accountFileStore = _services.GetRequiredService<IFileStore<Account>>();
+        _projectFileStore = _services.GetRequiredService<IFileStore<Project>>();
 
         _accountId = Guid.NewGuid();
         _projectId = Guid.NewGuid();
@@ -52,10 +54,11 @@ public partial class Create_Credit : FeatureFixture
     {
         var account = _fixture.Build<Account>()
             .With(a => a.Id, _accountId)
-            .With(a => a.Credits, Array.Empty<Credit>())
+            .With(a => a.Credits, [])
             .Create();
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", account, CancellationToken.None);
+        _accountFileStore.Add($"{_basePath}/accounts/{_accountId}", account);
+        await _accountFileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Project_Exists_For_The_Credit()
@@ -64,7 +67,8 @@ public partial class Create_Credit : FeatureFixture
             .With(p => p.Id, _projectId)
             .Create();
 
-        await _fileStore.SaveAsync($"{_basePath}/projects/{_projectId}", project, CancellationToken.None);
+        _projectFileStore.Add($"{_basePath}/projects/{_projectId}", project);
+        await _accountFileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Create_Credit_Request_Is_Sent(Guid accountId, DateTime issuedAt, Guid projectId)

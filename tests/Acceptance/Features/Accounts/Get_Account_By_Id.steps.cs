@@ -22,7 +22,7 @@ public partial class Get_Account_By_Id : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly IFileStore _fileStore;
+    private readonly IFileStore<Account> _fileStore;
     private const string OperationName = "GetAccountById";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -33,7 +33,7 @@ public partial class Get_Account_By_Id : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _fileStore = _services.GetRequiredService<IFileStore>();
+        _fileStore = _services.GetRequiredService<IFileStore<Account>>();
 
         _scopes = new Dictionary<string, string>()
         {
@@ -52,7 +52,8 @@ public partial class Get_Account_By_Id : FeatureFixture
         _account = _fixture.Create<Account>();
         _accountId = _account.Id;
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", _account, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", _account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task The_Response_Equals_Account()
