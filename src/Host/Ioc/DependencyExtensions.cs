@@ -33,7 +33,7 @@ public static class DependencyExtensions
    public static IServiceCollection AddPersistence(this IServiceCollection services)
    {
        return services
-           .AddSingleton<IFileStore, FileStore>()
+           .AddSingleton(typeof(IFileStore<>), typeof(FileStore<>))
            .AddSingleton<IAccountRepository, FileAccountRepository>()
            .AddSingleton<IProjectRepository, FileProjectRepository>();
    }
