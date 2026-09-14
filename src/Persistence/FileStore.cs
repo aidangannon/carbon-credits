@@ -18,8 +18,15 @@ public interface IFileStore
 
 public class FileStore : IFileStore
 {
+    /// <summary>
+    /// Tracks a pending write for a path: the live object callers may mutate in place, and the
+    /// etag that was on disk at the time it was last read (null if the path was never read in
+    /// this unit of work, e.g. a fresh Add), used purely as the optimistic-concurrency check.
+    /// </summary>
+    private sealed record PendingChange(object Value, string? ExpectedEtag);
+
     private readonly RepositoryLock _lock = new();
-    private readonly ConcurrentDictionary<string, FileRecord> _changes = new();
+    private readonly ConcurrentDictionary<string, PendingChange> _changes = new();
 
     public async Task<Result<T>> GetAsync<T>(string path, CancellationToken cancellationToken) where T : class
     {
@@ -31,31 +38,32 @@ public class FileStore : IFileStore
         var recordText = await File.ReadAllTextAsync(path, cancellationToken);
         var record = JsonSerializer.Deserialize<FileRecord>(recordText);
 
-        _changes[path] = record!;
-
         // Value deserializes as a JsonElement (its static type is `object`), so it must be
         // converted to T explicitly rather than cast directly.
         var value = record!.Value is JsonElement element
             ? element.Deserialize<T>()
             : record.Value as T;
 
-        return value is null
-            ? throw new InvalidCastException($"Cannot cast file store value '{typeof(T).Name}' from {Environment.NewLine}{recordText}")
-            : Result<T>.Ok(value);
+        if (value is null)
+        {
+            throw new InvalidCastException($"Cannot cast file store value '{typeof(T).Name}' from {Environment.NewLine}{recordText}");
+        }
+
+        // Track the live typed instance (not the raw disk snapshot) so that in-place mutations
+        // callers make to the returned aggregate are what actually get persisted on SaveAsync.
+        _changes[path] = new PendingChange(value, record.Meta.Etag);
+
+        return Result<T>.Ok(value);
     }
 
     public void Add(string path, object value)
     {
-        var etag = CreateEtag(value);
+        _changes.TryGetValue(path, out var existing);
 
-        _changes[path] = new FileRecord
-        {
-            Value = value,
-            Meta = new MetaRecord
-            {
-                Etag = etag
-            }
-        };
+        // Preserve the expected etag from a prior GetAsync on this path (if any) so the
+        // concurrency check still applies; a path added without ever being read is a fresh
+        // write with nothing to conflict against.
+        _changes[path] = new PendingChange(value, existing?.ExpectedEtag);
     }
 
     /// <summary>Locks the record's partition, validates the tracked change against the current etag and persists the value.</summary>
@@ -75,18 +83,27 @@ public class FileStore : IFileStore
     {
         await using var partitionLock = await _lock.AcquireAsync(path, cancellationToken);
 
-        _changes.TryGetValue(path, out var record);
+        _changes.TryGetValue(path, out var change);
 
         var currentEtag = File.Exists(path)
             ? JsonSerializer.Deserialize<FileRecord>(await File.ReadAllTextAsync(path, cancellationToken))!.Meta.Etag
             : null;
 
-        if (currentEtag is not null && record?.Meta.Etag != currentEtag)
+        // Only enforce the conflict check when this path was actually read earlier in this
+        // unit of work; a path that was only Add()-ed has nothing to conflict against.
+        if (change!.ExpectedEtag is not null && change.ExpectedEtag != currentEtag)
         {
-            throw new InvalidOperationException($"Conflict in file '{path}', tracked etag '{record?.Meta.Etag}' does not match current record etag '{currentEtag}'");
+            throw new InvalidOperationException($"Conflict in file '{path}', tracked etag '{change.ExpectedEtag}' does not match current record etag '{currentEtag}'");
         }
 
-        var etag = CreateEtag(record!.Value);
+        var record = new FileRecord
+        {
+            Value = change.Value,
+            Meta = new MetaRecord
+            {
+                Etag = CreateEtag(change.Value)
+            }
+        };
 
         await File.WriteAllTextAsync(path, JsonSerializer.Serialize(record), cancellationToken);
 
