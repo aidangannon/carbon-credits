@@ -70,7 +70,8 @@ public partial class Get_Account_By_Id : FeatureFixture
             .Create();
         _accountId = _account.Id;
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", _account, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", _account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task An_Account_Exists_With_A_Retired_Credit()
@@ -88,7 +89,8 @@ public partial class Get_Account_By_Id : FeatureFixture
             .Create();
         _accountId = _account.Id;
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", _account, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", _account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task An_Account_Exists_With_A_Future_Credit()
