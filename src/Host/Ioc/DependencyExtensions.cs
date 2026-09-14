@@ -33,9 +33,9 @@ public static class DependencyExtensions
    public static IServiceCollection AddPersistence(this IServiceCollection services)
    {
        return services
-           .AddSingleton(typeof(IFileStore<>), typeof(FileStore<>))
-           .AddSingleton<IAccountRepository, FileAccountRepository>()
-           .AddSingleton<IProjectRepository, FileProjectRepository>();
+           .AddScoped(typeof(IFileStore<>), typeof(FileStore<>))
+           .AddScoped<IAccountRepository, FileAccountRepository>()
+           .AddScoped<IProjectRepository, FileProjectRepository>();
    }
 
    public static IServiceCollection AddValidation(this IServiceCollection services)
