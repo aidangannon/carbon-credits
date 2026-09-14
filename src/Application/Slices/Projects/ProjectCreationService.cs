@@ -13,7 +13,7 @@ public class ProjectCreationService(IProjectRepository projectRepository) : IPro
 {
     public async Task<Result<Project>> CreateProject(Project project, CancellationToken cancellationToken)
     {
-        var result = await projectRepository.SaveAsync(project, cancellationToken);
+        var result = await projectRepository.SaveAsync(cancellationToken);
 
         return result.HasFailed() ? Result<Project>.Err(result.Error) : Result<Project>.Ok(project);
     }
