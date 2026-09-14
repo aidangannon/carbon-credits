@@ -24,7 +24,7 @@ public class FileAccountRepository(IOptions<FileOptions> fileOptions, IFileStore
     public void Add(Account account)
     {
         var basePath = fileOptions.Value?.BasePath ?? throw new ArgumentNullException("BasePath", "File base path cannot be null");
-        var path = $"{basePath}/projects/{account.Id}";
+        var path = $"{basePath}/accounts/{account.Id}";
 
         fileStore.Add(path, account);
     }

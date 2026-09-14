@@ -20,6 +20,7 @@ public partial class Create_Credit : FeatureFixture
     private Guid _projectId;
     private DateTime _issuedAt;
     private HttpResponseMessage? _httpResponse;
+    private CreditResponse? _createdCredit;
     private readonly HttpClient _client;
     private readonly Dictionary<string, string> _scopes;
     private readonly IServiceProvider _services;
@@ -93,12 +94,26 @@ public partial class Create_Credit : FeatureFixture
 
     private async Task The_Response_Should_Reflect_The_Created_Credit()
     {
-        var creditResponse = await _httpResponse!.Content.ReadFromJsonAsync<CreditResponse>();
+        _createdCredit = await _httpResponse!.Content.ReadFromJsonAsync<CreditResponse>();
 
         using var scope = new AssertionScope();
-        creditResponse!.Id.Should().NotBe(Guid.Empty);
-        creditResponse.IssuedAt.Should().BeCloseTo(_issuedAt, TimeSpan.FromSeconds(1));
-        creditResponse.ProjectId.Should().Be(_projectId);
-        creditResponse.RetiredAt.Should().BeNull();
+        _createdCredit!.Id.Should().NotBe(Guid.Empty);
+        _createdCredit.IssuedAt.Should().BeCloseTo(_issuedAt, TimeSpan.FromSeconds(1));
+        _createdCredit.ProjectId.Should().Be(_projectId);
+        _createdCredit.RetiredAt.Should().BeNull();
+    }
+
+    private async Task The_Credit_Should_Be_Persisted_On_The_Account()
+    {
+        var result = await _fileStore.GetAsync<Account>($"{_basePath}/accounts/{_accountId}", CancellationToken.None);
+        var account = result.Unwrap();
+
+        var credit = account.Credits.SingleOrDefault(c => c.Id == _createdCredit!.Id);
+
+        using var scope = new AssertionScope();
+        credit.Should().NotBeNull();
+        credit!.IssuedAt.Should().BeCloseTo(_issuedAt, TimeSpan.FromSeconds(1));
+        credit.ProjectId.Should().Be(_projectId);
+        credit.RetiredAt.Should().BeNull();
     }
 }

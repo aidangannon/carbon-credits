@@ -27,6 +27,7 @@ public partial class Create_Account
             when => A_Create_Account_Request_Is_Sent(_name),
             then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.Created, _httpResponse!),
             and => The_Response_Should_Reflect_The_Create_Request(),
+            and => The_Account_Should_Be_Persisted(),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCalledMessage, _scopes, _services),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCompletedMessage, _scopes, _services)
         );
