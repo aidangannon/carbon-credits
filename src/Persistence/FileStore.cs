@@ -12,6 +12,7 @@ namespace Persistence;
 public interface IFileStore<T>
 {
     Task<Result<T>> GetAsync(string path, CancellationToken cancellationToken);
+    Result Add(string path, T value);
     Task<Result> SaveAsync(CancellationToken cancellationToken);
 }
 
@@ -33,6 +34,20 @@ public class FileStore<T> : IFileStore<T>
         _changes[path] = record!;
 
         return Result<T>.Ok(record!.Value);
+    }
+
+    public void Add(string path, T value)
+    {
+        var etag = CreateEtag(value);
+
+        _changes[path] = new FileRecord<T>
+        {
+            Value = value,
+            Meta = new MetaRecord
+            {
+                Etag = etag
+            }
+        };
     }
 
     /// <summary>Locks the record's partition, validates the tracked change against the current etag and persists the value.</summary>
@@ -63,16 +78,23 @@ public class FileStore<T> : IFileStore<T>
             throw new InvalidOperationException($"Conflict in file '{path}', tracked etag '{record?.Meta.Etag}' does not match current record etag '{currentEtag}'");
         }
 
-        var payload = JsonSerializer.Serialize(record!.Value);
-
-        // collision extremely unlikely 16 chars in more than enough for basic etag
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(payload));
-        var etag = Convert.ToHexString(hash)[..16];
+        var etag = CreateEtag(record!.Value);
 
         await File.WriteAllTextAsync(path, JsonSerializer.Serialize(record), cancellationToken);
 
         _changes.TryRemove(path, out _);
 
         return Result.Ok();
+    }
+
+    private static string CreateEtag(T value)
+    {
+        var payload = JsonSerializer.Serialize(value);
+
+        // collision extremely unlikely 16 chars in more than enough for basic etag
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(payload));
+        var etag = Convert.ToHexString(hash)[..16];
+
+        return etag;
     }
 }

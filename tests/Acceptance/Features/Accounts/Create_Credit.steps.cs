@@ -25,7 +25,7 @@ public partial class Create_Credit : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly IFileStore _fileStore;
+    private readonly IFileStore<Project> _fileStore;
     private const string OperationName = "CreateCredit";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -36,7 +36,7 @@ public partial class Create_Credit : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _fileStore = _services.GetRequiredService<IFileStore>();
+        _fileStore = _services.GetRequiredService<IFileStore<Project>>();
 
         _accountId = Guid.NewGuid();
         _projectId = Guid.NewGuid();

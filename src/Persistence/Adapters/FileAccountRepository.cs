@@ -21,6 +21,14 @@ public class FileAccountRepository(IOptions<FileOptions> fileOptions, IFileStore
             : Result<Account>.Ok(result.Unwrap());
     }
 
+    public void Add(Account account)
+    {
+        var basePath = fileOptions.Value?.BasePath ?? throw new ArgumentNullException("BasePath", "File base path cannot be null");
+        var path = $"{basePath}/projects/{account.Id}";
+
+        fileStore.Add(path, account);
+    }
+
     public async Task<Result> SaveAsync(CancellationToken cancellationToken)
     {
         return await fileStore.SaveAsync(cancellationToken);
