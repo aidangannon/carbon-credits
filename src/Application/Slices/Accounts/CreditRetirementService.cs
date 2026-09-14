@@ -26,6 +26,6 @@ public class CreditRetirementService(IAccountRepository accountRepository) : ICr
             return Result.Err(domainResult.Error!);
         }
 
-        return await accountRepository.SaveAsync(account, cancellationToken);
+        return await accountRepository.SaveAsync(cancellationToken);
     }
 }
