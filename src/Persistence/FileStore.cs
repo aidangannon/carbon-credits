@@ -18,15 +18,8 @@ public interface IFileStore
 
 public class FileStore : IFileStore
 {
-    /// <summary>
-    /// Tracks a pending write for a path: the live object callers may mutate in place, and the
-    /// etag that was on disk at the time it was last read (null if the path was never read in
-    /// this unit of work, e.g. a fresh Add), used purely as the optimistic-concurrency check.
-    /// </summary>
-    private sealed record PendingChange(object Value, string? ExpectedEtag);
-
     private readonly RepositoryLock _lock = new();
-    private readonly ConcurrentDictionary<string, PendingChange> _changes = new();
+    private readonly ConcurrentDictionary<string, FileRecord> _changes = new();
 
     public async Task<Result<T>> GetAsync<T>(string path, CancellationToken cancellationToken) where T : class
     {
@@ -49,9 +42,7 @@ public class FileStore : IFileStore
             throw new InvalidCastException($"Cannot cast file store value '{typeof(T).Name}' from {Environment.NewLine}{recordText}");
         }
 
-        // Track the live typed instance (not the raw disk snapshot) so that in-place mutations
-        // callers make to the returned aggregate are what actually get persisted on SaveAsync.
-        _changes[path] = new PendingChange(value, record.Meta.Etag);
+        _changes[path] = new FileRecord { Value = value, Meta = record.Meta };
 
         return Result<T>.Ok(value);
     }
@@ -60,10 +51,11 @@ public class FileStore : IFileStore
     {
         _changes.TryGetValue(path, out var existing);
 
-        // Preserve the expected etag from a prior GetAsync on this path (if any) so the
-        // concurrency check still applies; a path added without ever being read is a fresh
-        // write with nothing to conflict against.
-        _changes[path] = new PendingChange(value, existing?.ExpectedEtag);
+        _changes[path] = new FileRecord
+        {
+            Value = value,
+            Meta = existing?.Meta ?? new MetaRecord { Etag = CreateEtag(value) }
+        };
     }
 
     /// <summary>Locks the record's partition, validates the tracked change against the current etag and persists the value.</summary>
@@ -83,27 +75,18 @@ public class FileStore : IFileStore
     {
         await using var partitionLock = await _lock.AcquireAsync(path, cancellationToken);
 
-        _changes.TryGetValue(path, out var change);
+        _changes.TryGetValue(path, out var record);
 
         var currentEtag = File.Exists(path)
             ? JsonSerializer.Deserialize<FileRecord>(await File.ReadAllTextAsync(path, cancellationToken))!.Meta.Etag
             : null;
 
-        // Only enforce the conflict check when this path was actually read earlier in this
-        // unit of work; a path that was only Add()-ed has nothing to conflict against.
-        if (change!.ExpectedEtag is not null && change.ExpectedEtag != currentEtag)
+        if (currentEtag is not null && record?.Meta.Etag != currentEtag)
         {
-            throw new InvalidOperationException($"Conflict in file '{path}', tracked etag '{change.ExpectedEtag}' does not match current record etag '{currentEtag}'");
+            throw new InvalidOperationException($"Conflict in file '{path}', tracked etag '{record?.Meta.Etag}' does not match current record etag '{currentEtag}'");
         }
 
-        var record = new FileRecord
-        {
-            Value = change.Value,
-            Meta = new MetaRecord
-            {
-                Etag = CreateEtag(change.Value)
-            }
-        };
+        record!.Meta.Etag = CreateEtag(record.Value);
 
         await File.WriteAllTextAsync(path, JsonSerializer.Serialize(record), cancellationToken);
 
