@@ -36,7 +36,7 @@ public partial class Create_Credit : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _fileStore = _services.GetRequiredService<IFileStore>();
+        _fileStore = _services.CreateScope().ServiceProvider.GetRequiredService<IFileStore>();
 
         _accountId = Guid.NewGuid();
         _projectId = Guid.NewGuid();

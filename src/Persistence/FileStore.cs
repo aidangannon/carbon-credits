@@ -33,9 +33,15 @@ public class FileStore : IFileStore
 
         _changes[path] = record!;
 
-        return record!.Value is not T castedRecord
+        // Value deserializes as a JsonElement (its static type is `object`), so it must be
+        // converted to T explicitly rather than cast directly.
+        var value = record!.Value is JsonElement element
+            ? element.Deserialize<T>()
+            : record.Value as T;
+
+        return value is null
             ? throw new InvalidCastException($"Cannot cast file store value '{typeof(T).Name}' from {Environment.NewLine}{recordText}")
-            : Result<T>.Ok(castedRecord);
+            : Result<T>.Ok(value);
     }
 
     public void Add(string path, object value)

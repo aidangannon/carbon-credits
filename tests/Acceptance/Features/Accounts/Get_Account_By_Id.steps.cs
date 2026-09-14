@@ -33,7 +33,7 @@ public partial class Get_Account_By_Id : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _fileStore = _services.GetRequiredService<IFileStore>();
+        _fileStore = _services.CreateScope().ServiceProvider.GetRequiredService<IFileStore>();
 
         _scopes = new Dictionary<string, string>()
         {
