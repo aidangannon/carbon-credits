@@ -59,7 +59,8 @@ public partial class Transfer_Credit : FeatureFixture
             .With(a => a.Credits, Array.Empty<Credit>())
             .Create();
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", account, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private Task A_Recipient_Account_Exists()
@@ -75,7 +76,8 @@ public partial class Transfer_Credit : FeatureFixture
             .With(a => a.Credits, Array.Empty<Credit>())
             .Create();
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_recipientAccountId}", account, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_recipientAccountId}", account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Project_Exists_For_The_Credit()
@@ -84,7 +86,8 @@ public partial class Transfer_Credit : FeatureFixture
             .With(p => p.Id, _projectId)
             .Create();
 
-        await _fileStore.SaveAsync($"{_basePath}/projects/{_projectId}", project, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/projects/{_projectId}", project);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Credit_Exists_On_The_Account()
@@ -105,7 +108,8 @@ public partial class Transfer_Credit : FeatureFixture
             Credits = [credit]
         };
 
-        await _fileStore.SaveAsync($"{_basePath}/accounts/{_accountId}", updatedAccount, CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", updatedAccount);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Transfer_Credit_Request_Is_Sent(Guid accountId, Guid creditId, Guid recipientAccountId)

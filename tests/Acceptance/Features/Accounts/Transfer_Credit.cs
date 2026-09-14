@@ -96,7 +96,7 @@ public partial class Transfer_Credit
             and => A_Project_Exists_For_The_Credit(),
             and => A_Credit_Exists_On_The_Account(),
             when => A_Transfer_Credit_Request_Is_Sent(_accountId, _creditId, _recipientAccountId),
-            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS_CODE(HttpStatusCode.OK, _httpResponse!),
+            then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.OK, _httpResponse!),
             and => The_Sender_Should_No_Longer_Have_The_Credit(),
             and => The_Recipient_Should_Now_Have_The_Credit(),
             and => LogSteps.There_Should_Be_A_Log_With_Level_LEVEL_And_Message_MESSAGE_And_Scopes_SCOPES(LogLevel.Information, EndpointCalledMessage, _scopes, _services),
