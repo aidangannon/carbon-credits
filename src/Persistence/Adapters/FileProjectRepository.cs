@@ -7,14 +7,14 @@ using FileOptions = Crosscutting.Options.FileOptions;
 
 namespace Persistence.Adapters;
 
-public class FileProjectRepository(IOptions<FileOptions> fileOptions, IFileStore<Project> fileStore) : IProjectRepository
+public class FileProjectRepository(IOptions<FileOptions> fileOptions, IFileStore fileStore) : IProjectRepository
 {
     public async Task<Result<Project>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var basePath = fileOptions.Value?.BasePath ?? throw new ArgumentNullException("BasePath", "File base path cannot be null");
         var path = $"{basePath}/projects/{id}";
 
-        var result = await fileStore.GetAsync(path, cancellationToken);
+        var result = await fileStore.GetAsync<Project>(path, cancellationToken);
 
         return result.HasFailed()
             ? Result<Project>.Err(ProjectErrors.NotFound)

@@ -33,7 +33,7 @@ public static class DependencyExtensions
    public static IServiceCollection AddPersistence(this IServiceCollection services)
    {
        return services
-           .AddScoped(typeof(IFileStore<>), typeof(FileStore<>))
+           .AddScoped<IFileStore, FileStore>()
            .AddScoped<IAccountRepository, FileAccountRepository>()
            .AddScoped<IProjectRepository, FileProjectRepository>();
    }

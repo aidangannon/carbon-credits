@@ -22,7 +22,7 @@ public partial class Get_Project_By_Id : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly IFileStore<Project> _fileStore;
+    private readonly IFileStore _fileStore;
     private const string OperationName = "GetProjectById";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -33,7 +33,7 @@ public partial class Get_Project_By_Id : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _fileStore = _services.GetRequiredService<IFileStore<Project>>();
+        _fileStore = _services.GetRequiredService<IFileStore>();
 
         _scopes = new Dictionary<string, string>
         {

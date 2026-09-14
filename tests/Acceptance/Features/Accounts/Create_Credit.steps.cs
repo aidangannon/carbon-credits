@@ -25,8 +25,7 @@ public partial class Create_Credit : FeatureFixture
     private readonly IServiceProvider _services;
     private readonly string _basePath;
     private readonly Fixture _fixture;
-    private readonly IFileStore<Account> _accountFileStore;
-    private readonly IFileStore<Project> _projectFileStore;
+    private readonly IFileStore _fileStore;
     private const string OperationName = "CreateCredit";
     private const string EndpointCalledMessage = "Endpoint Called";
     private const string EndpointCompletedMessage = "Endpoint Completed";
@@ -37,8 +36,7 @@ public partial class Create_Credit : FeatureFixture
         _services = TestWebApplicationFactory.Instance!.Services;
         _basePath = _services.GetService<IOptions<FileOptions>>()?.Value?.BasePath!;
         _fixture = new Fixture();
-        _accountFileStore = _services.GetRequiredService<IFileStore<Account>>();
-        _projectFileStore = _services.GetRequiredService<IFileStore<Project>>();
+        _fileStore = _services.GetRequiredService<IFileStore>();
 
         _accountId = Guid.NewGuid();
         _projectId = Guid.NewGuid();
@@ -57,8 +55,8 @@ public partial class Create_Credit : FeatureFixture
             .With(a => a.Credits, [])
             .Create();
 
-        _accountFileStore.Add($"{_basePath}/accounts/{_accountId}", account);
-        await _accountFileStore.SaveAsync(CancellationToken.None);
+        _fileStore.Add($"{_basePath}/accounts/{_accountId}", account);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Project_Exists_For_The_Credit()
@@ -67,8 +65,8 @@ public partial class Create_Credit : FeatureFixture
             .With(p => p.Id, _projectId)
             .Create();
 
-        _projectFileStore.Add($"{_basePath}/projects/{_projectId}", project);
-        await _accountFileStore.SaveAsync(CancellationToken.None);
+        _fileStore.Add($"{_basePath}/projects/{_projectId}", project);
+        await _fileStore.SaveAsync(CancellationToken.None);
     }
 
     private async Task A_Create_Credit_Request_Is_Sent(Guid accountId, DateTime issuedAt, Guid projectId)

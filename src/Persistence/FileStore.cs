@@ -9,19 +9,19 @@ using Persistence.Models;
 namespace Persistence;
 
 /// <summary>Generic file-backed store handling record loading, optimistic-concurrency updates, change tracking and locking.</summary>
-public interface IFileStore<T>
+public interface IFileStore
 {
-    Task<Result<T>> GetAsync(string path, CancellationToken cancellationToken);
-    Result Add(string path, T value);
+    Task<Result<T>> GetAsync<T>(string path, CancellationToken cancellationToken) where T : class;
+    void Add(string path, object value);
     Task<Result> SaveAsync(CancellationToken cancellationToken);
 }
 
-public class FileStore<T> : IFileStore<T>
+public class FileStore : IFileStore
 {
     private readonly RepositoryLock _lock = new();
-    private readonly ConcurrentDictionary<string, FileRecord<T>> _changes = new();
+    private readonly ConcurrentDictionary<string, FileRecord> _changes = new();
 
-    public async Task<Result<T>> GetAsync(string path, CancellationToken cancellationToken)
+    public async Task<Result<T>> GetAsync<T>(string path, CancellationToken cancellationToken) where T : class
     {
         if (!File.Exists(path))
         {
@@ -29,18 +29,20 @@ public class FileStore<T> : IFileStore<T>
         }
 
         var recordText = await File.ReadAllTextAsync(path, cancellationToken);
-        var record = JsonSerializer.Deserialize<FileRecord<T>>(recordText);
+        var record = JsonSerializer.Deserialize<FileRecord>(recordText);
 
         _changes[path] = record!;
 
-        return Result<T>.Ok(record!.Value);
+        return record!.Value is not T castedRecord
+            ? throw new InvalidCastException($"Cannot cast file store value '{typeof(T).Name}' from {Environment.NewLine}{recordText}")
+            : Result<T>.Ok(castedRecord);
     }
 
-    public void Add(string path, T value)
+    public void Add(string path, object value)
     {
         var etag = CreateEtag(value);
 
-        _changes[path] = new FileRecord<T>
+        _changes[path] = new FileRecord
         {
             Value = value,
             Meta = new MetaRecord
@@ -70,7 +72,7 @@ public class FileStore<T> : IFileStore<T>
         _changes.TryGetValue(path, out var record);
 
         var currentEtag = File.Exists(path)
-            ? JsonSerializer.Deserialize<FileRecord<T>>(await File.ReadAllTextAsync(path, cancellationToken))!.Meta.Etag
+            ? JsonSerializer.Deserialize<FileRecord>(await File.ReadAllTextAsync(path, cancellationToken))!.Meta.Etag
             : null;
 
         if (currentEtag is not null && record?.Meta.Etag != currentEtag)
@@ -87,7 +89,7 @@ public class FileStore<T> : IFileStore<T>
         return Result.Ok();
     }
 
-    private static string CreateEtag(T value)
+    private static string CreateEtag(object value)
     {
         var payload = JsonSerializer.Serialize(value);
 
