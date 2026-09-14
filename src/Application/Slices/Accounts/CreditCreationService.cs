@@ -35,7 +35,7 @@ public class CreditCreationService(IAccountRepository accountRepository, IProjec
             return Result<Account>.Err(domainResult.Error!);
         }
 
-        var saveResult = await accountRepository.SaveAsync(account, cancellationToken);
+        var saveResult = await accountRepository.SaveAsync(cancellationToken);
 
         return saveResult.HasFailed() ? Result<Account>.Err(saveResult.Error) : Result<Account>.Ok(account);
     }

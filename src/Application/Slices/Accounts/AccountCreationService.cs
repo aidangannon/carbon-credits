@@ -13,7 +13,7 @@ public class AccountCreationService(IAccountRepository accountRepository) : IAcc
 {
     public async Task<Result<Account>> CreateAccount(Account account, CancellationToken cancellationToken)
     {
-        var result = await accountRepository.SaveAsync(account, cancellationToken);
+        var result = await accountRepository.SaveAsync(cancellationToken);
 
         return result.HasFailed() ? Result<Account>.Err(result.Error) : Result<Account>.Ok(account);
     }

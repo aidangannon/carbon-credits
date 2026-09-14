@@ -6,5 +6,5 @@ namespace Application.Ports;
 public interface IAccountRepository
 {
     Task<Result<Account>> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<Result> SaveAsync(Account account, CancellationToken cancellationToken);
+    Task<Result> SaveAsync(CancellationToken cancellationToken);
 }

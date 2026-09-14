@@ -21,7 +21,7 @@ public class FileProjectRepository(IOptions<FileOptions> fileOptions, IFileStore
             : Result<Project>.Ok(result.Unwrap());
     }
 
-    public async Task<Result> SaveAsync(Project project, CancellationToken cancellationToken)
+    public async Task<Result> SaveAsync(CancellationToken cancellationToken)
     {
         return await fileStore.SaveAsync(cancellationToken);
     }
