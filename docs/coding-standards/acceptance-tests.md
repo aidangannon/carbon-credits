@@ -33,6 +33,15 @@ The same pattern can be applied to the persistence layer if needed.
 
 The rule for what goes here: infrastructure and boilerplate reduction only. No business logic, no assertions, no domain knowledge. Only pull something into infrastructure when there is enough repetition across `.steps.cs` files to warrant it - do not pre-emptively extract.
 
+## Verifying State Changes
+
+For any scenario that creates or mutates a record, assert two things: the response, and the persisted state.
+
+- The `HttpClient` is only used for the one call that is the system under test (the `when` step). Verifying its response alone is not enough - it proves the endpoint returned the right shape, not that anything was actually saved.
+- To verify what was actually saved, go around the client and read directly from the lowest-level component that sits between the code and the actual data store - not a domain service, use-case, or repository built on top of it, and not another endpoint call. Calling a second endpoint (e.g. a `GET`) to verify a write couples the test to that endpoint's own correctness and no longer isolates the thing actually under test.
+
+See [`Create_Account.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Account.steps.cs) and [`Create_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Credit.steps.cs) for this pattern in practice.
+
 ## Summary of Rules
 
 | Rule | Reason |
@@ -41,3 +50,5 @@ The rule for what goes here: infrastructure and boilerplate reduction only. No b
 | Common steps contain no domain logic | Prevents crosscutting files from accumulating business knowledge |
 | Infrastructure hides boilerplate only | Keeps `.steps.cs` files readable without leaking concerns upward |
 | Extract to infrastructure only when repetition warrants it | Avoids premature abstraction |
+| Only the SUT call goes through `HttpClient` | Keeps the test isolated to the thing actually being verified |
+| Verify persisted state via the lowest-level data-store component, not another endpoint | Avoids coupling one test's correctness to a different endpoint's correctness |
