@@ -40,7 +40,7 @@ For any scenario that creates or mutates a record, assert two things: the respon
 - The `HttpClient` is only used for the one call that is the system under test (the `when` step). Verifying its response alone is not enough - it proves the endpoint returned the right shape, not that anything was actually saved.
 - To verify what was actually saved, go around the client and read directly from the lowest-level component that sits between the code and the actual data store - not a domain service, use-case, or repository built on top of it, and not another endpoint call. Calling a second endpoint (e.g. a `GET`) to verify a write couples the test to that endpoint's own correctness and no longer isolates the thing actually under test.
 
-See [`Create_Account.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Account.steps.cs) and [`Create_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Credit.steps.cs) for this pattern in practice.
+See [`Create_Account.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Account.steps.cs), [`Create_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Credit.steps.cs) and [`Retire_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Retire_Credit.steps.cs) for this pattern in practice.
 
 ## Summary of Rules
 
