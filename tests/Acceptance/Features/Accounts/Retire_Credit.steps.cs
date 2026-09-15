@@ -91,13 +91,13 @@ public partial class Retire_Credit : FeatureFixture
 
     private async Task The_Credit_Should_Be_Retired_On_The_Account()
     {
-        var getResponse = await _client.GetAccountById(_accountId);
-        var accountResponse = await getResponse.Content.ReadFromJsonAsync<AccountResponse>();
+        var result = await _fileStore.GetAsync<Account>($"{_basePath}/accounts/{_accountId}", CancellationToken.None);
+        var account = result.Unwrap();
 
-        var creditResponse = accountResponse!.Credits.Single(c => c.Id == _creditId);
-        creditResponse.ProjectId.Should().Be(_credit!.ProjectId);
-        creditResponse.IssuedAt.Should().Be(_credit.IssuedAt);
-        creditResponse.RetiredAt.Should().NotBeNull();
-        creditResponse.RetiredAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+        var credit = account.Credits.Single(c => c.Id == _creditId);
+        credit.ProjectId.Should().Be(_credit!.ProjectId);
+        credit.IssuedAt.Should().Be(_credit.IssuedAt);
+        credit.RetiredAt.Should().NotBeNull();
+        credit.RetiredAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
     }
 }
