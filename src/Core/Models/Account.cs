@@ -36,4 +36,11 @@ public class Account
         _credits.Add(credit);
         return DomainResult.Ok();
     }
+
+    public IReadOnlyCollection<Credit> GetCredits(bool includeRetiredCredits, bool includeFutureCredits)
+    {
+        return _credits
+            .Where(c => (includeRetiredCredits || c.RetiredAt is null) && (includeFutureCredits || c.IssuedAt <= DateTime.UtcNow))
+            .ToList();
+    }
 }

@@ -14,7 +14,10 @@ public class AccountMapperTests
     [Fact]
     public void ToResponse_ShouldMapAllFields()
     {
-        var credit = _fixture.Create<Credit>();
+        var credit = _fixture
+            .Build<Credit>()
+            .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-1))
+            .Create();
         var account = _fixture
             .Build<Account>()
             .With(a => a.Credits, [credit])
