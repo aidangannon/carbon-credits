@@ -62,4 +62,12 @@ public class ErrorCodeMapperTests
 
         act.Should().Throw<InvalidOperationException>();
     }
+
+    [Fact]
+    public void ToErrorDetails_WhenCreditProjectNotFoundMustRetire_ReturnsWith422()
+    {
+        var result = ErrorCodeMapper.ToErrorDetails(CreditErrors.ProjectNotFoundMustRetire);
+
+        result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
+    }
 }
