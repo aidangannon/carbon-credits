@@ -17,7 +17,7 @@ public class TransferCreditService(IAccountRepository accountRepository, IProjec
         var accountResult = await accountRepository.GetByIdAsync(accountId, cancellationToken);
         if (accountResult.HasFailed())
         {
-            return Result<Account>.Err(accountResult.Error);
+            return accountResult;
         }
 
         var account = accountResult.Unwrap();
@@ -25,7 +25,7 @@ public class TransferCreditService(IAccountRepository accountRepository, IProjec
         var recipientResult = await accountRepository.GetByIdAsync(recipientAccountId, cancellationToken);
         if (recipientResult.HasFailed())
         {
-            return Result<Account>.Err(recipientResult.Error);
+            return recipientResult;
         }
 
         var recipient = recipientResult.Unwrap();
@@ -47,11 +47,15 @@ public class TransferCreditService(IAccountRepository accountRepository, IProjec
         }
 
         // Both accounts were tracked by their GetByIdAsync loads above, so this single unit-of-work
-        // save flushes both mutations together (no per-entity ordering control anymore).
+        // save flushes both mutations together (no per-entity ordering control anymore). If it still
+        // fails, the two records may be left inconsistent - this is an unrecoverable, exceptional
+        // condition rather than a normal domain error, so we throw and let the global exception
+        // handler surface it as a 500.
         var saveResult = await accountRepository.SaveAsync(cancellationToken);
         if (saveResult.HasFailed())
         {
-            return Result<Account>.Err(saveResult.Error);
+            throw new InvalidOperationException(
+                $"Account id: {accountId} and account id: {recipientAccountId} have been left in a partial transfer state: {saveResult.Error}");
         }
 
         return Result<Account>.Ok(account);

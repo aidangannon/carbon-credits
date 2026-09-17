@@ -17,7 +17,6 @@ public static class ErrorCodeMapper
         CreditErrors.ProjectMismatch => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
         CreditErrors.ProjectNotFoundMustRetire => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
         CreditErrors.AlreadyRetired => new ErrorDetails(StatusCodes.Status422UnprocessableEntity, "Unprocessable entity"),
-        var code when code.StartsWith(AccountErrors.PartialTransferState) => new ErrorDetails(StatusCodes.Status500InternalServerError, "Internal server error"),
         _ => throw new InvalidOperationException($"Unhandled error code: {errorCode}")
     };
 }
