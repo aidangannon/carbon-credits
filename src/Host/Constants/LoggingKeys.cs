@@ -7,4 +7,5 @@ public static class LoggingKeys
     public const string AccountName = nameof(AccountName);
     public const string ProjectId = nameof(ProjectId);
     public const string ProjectName = nameof(ProjectName);
+    public const string CreditId = nameof(CreditId);
 }

@@ -9,6 +9,7 @@ public static class AccountsEndpointMapper
             .MapGetAccountById()
             .MapCreateAccount()
             .MapCreateCredit()
+            .MapRetireCredit()
             .WithTags("Accounts");
     }
 }
