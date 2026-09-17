@@ -46,11 +46,6 @@ public class TransferCreditService(IAccountRepository accountRepository, IProjec
             return Result<Account>.Err(domainResult.Error!);
         }
 
-        // Both accounts were tracked by their GetByIdAsync loads above, so this single unit-of-work
-        // save flushes both mutations together (no per-entity ordering control anymore). If it still
-        // fails, the two records may be left inconsistent - this is an unrecoverable, exceptional
-        // condition rather than a normal domain error, so we throw and let the global exception
-        // handler surface it as a 500.
         var saveResult = await accountRepository.SaveAsync(cancellationToken);
         if (saveResult.HasFailed())
         {
