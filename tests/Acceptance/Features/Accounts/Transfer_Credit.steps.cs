@@ -68,11 +68,11 @@ public partial class Transfer_Credit : FeatureFixture
         return A_Recipient_Account_Exists_Created_At_CREATED(DateTime.UtcNow.AddDays(-1));
     }
 
-    private async Task A_Recipient_Account_Exists_Created_At_CREATED(DateTime createdAt)
+    private async Task A_Recipient_Account_Exists_Created_At_CREATED(DateTime created)
     {
         var account = _fixture.Build<Account>()
             .With(a => a.Id, _recipientAccountId)
-            .With(a => a.CreatedAt, createdAt)
+            .With(a => a.CreatedAt, created)
             .With(a => a.Credits, Array.Empty<Credit>())
             .Create();
 
