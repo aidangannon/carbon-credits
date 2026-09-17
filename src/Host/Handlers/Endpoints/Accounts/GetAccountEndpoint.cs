@@ -43,7 +43,8 @@ public static class GetAccountByIdEndpoint
             id,
             query.IncludeRetiredCredits ?? true,
             query.IncludeFutureCredits ?? false,
-            cancellationToken);
+            cancellationToken
+        );
 
         logger.LogInformation("Endpoint Completed");
 
