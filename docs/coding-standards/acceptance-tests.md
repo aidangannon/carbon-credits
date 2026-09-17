@@ -19,6 +19,10 @@ See [`Create_Account.cs`](/tests/Acceptance/Features/Accounts/Create_Account.cs)
 
 Each `.steps.cs` file should own its own steps. Steps that retrieve or manipulate the same entity may be duplicated across slices - this is intentional. It keeps each slice open-closed: both can change independently without being coupled to each other. DRY is secondary to isolation here.
 
+## Parameterised Step Names
+
+When a step method takes a parameter, include the parameter's name in uppercase somewhere in the method name (e.g. `A_Recipient_Account_Exists_Created_At_CREATED(DateTime created)`). LightBDD matches each uppercase segment of the method name against the corresponding argument passed at the call site and renders it in the readable scenario output, so the value shows up inline instead of being hidden. Each uppercase segment must match its parameter name exactly (case-insensitively) for this to work; a method can have multiple such segments in any position (not just as a suffix), e.g. `The_Response_Should_Have_Problem_Details_With_Status_STATUS_And_Detail_DETAIL`. See [`HttpSteps.The_Response_Should_Have_Status_Code_STATUS`](/tests/Acceptance/CommonSteps/HttpSteps.cs) for the established pattern.
+
 ## Common Steps
 
 [`CommonSteps/`](/tests/Acceptance/CommonSteps/) contains static steps for crosscutting concerns only, such as asserting HTTP status codes or checking log output. See [`HttpSteps.cs`](/tests/Acceptance/CommonSteps/HttpSteps.cs) and [`LogSteps.cs`](/tests/Acceptance/CommonSteps/LogSteps.cs).
@@ -40,7 +44,7 @@ For any scenario that creates or mutates a record, assert two things: the respon
 - The `HttpClient` is only used for the one call that is the system under test (the `when` step). Verifying its response alone is not enough - it proves the endpoint returned the right shape, not that anything was actually saved.
 - To verify what was actually saved, go around the client and read directly from the lowest-level component that sits between the code and the actual data store - not a domain service, use-case, or repository built on top of it, and not another endpoint call. Calling a second endpoint (e.g. a `GET`) to verify a write couples the test to that endpoint's own correctness and no longer isolates the thing actually under test.
 
-See [`Create_Account.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Account.steps.cs) and [`Create_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Credit.steps.cs) for this pattern in practice.
+See [`Create_Account.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Account.steps.cs), [`Create_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Create_Credit.steps.cs) and [`Retire_Credit.steps.cs`](/tests/Acceptance/Features/Accounts/Retire_Credit.steps.cs) for this pattern in practice.
 
 ## Summary of Rules
 

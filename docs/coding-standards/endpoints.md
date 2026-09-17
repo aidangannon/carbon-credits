@@ -24,6 +24,10 @@ One public extension method registers the route. One private static method is th
 
 Inject all dependencies via `[FromServices]` attributes on the handler method parameters. Do not use constructor injection - handlers are static. This keeps dependencies explicit and co-located with the handler that uses them.
 
+## Parameter Order
+
+`CancellationToken cancellationToken` must always be the last parameter on a handler method, after route/query/body parameters and `[FromServices]` dependencies. See [`GetAccountByIdEndpoint.cs`](/src/Host/Handlers/Endpoints/Accounts/GetAccountByIdEndpoint.cs) for the established pattern.
+
 ## Feature Mapper
 
 Each feature has a mapper that creates the route group and chains all its endpoints. See [`AccountsEndpointMapper.cs`](/src/Host/Handlers/Endpoints/Accounts/AccountsEndpointMapper.cs) and [`ProjectsEndpointMapper.cs`](/src/Host/Handlers/Endpoints/Projects/ProjectsEndpointMapper.cs).

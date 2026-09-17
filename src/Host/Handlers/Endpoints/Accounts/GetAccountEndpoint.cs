@@ -26,9 +26,8 @@ public static class GetAccountByIdEndpoint
         [FromRoute] Guid id,
         [FromServices] IAccountRetrievalService accountRetrievalService,
         [FromServices] ILoggerFactory loggerFactory,
-        CancellationToken cancellationToken,
-        [FromQuery] bool includeRetiredCredits = true,
-        [FromQuery] bool includeFutureCredits = false
+        [AsParameters] GetAccountCreditsQuery query,
+        CancellationToken cancellationToken
     )
     {
         var logger = loggerFactory.CreateLogger(LoggingOperations.GetAccountById);
@@ -40,7 +39,11 @@ public static class GetAccountByIdEndpoint
 
         logger.LogInformation("Endpoint Called");
 
-        var serviceResult = await accountRetrievalService.GetAccountById(id, includeRetiredCredits, includeFutureCredits, cancellationToken);
+        var serviceResult = await accountRetrievalService.GetAccountById(
+            id,
+            query.IncludeRetiredCredits ?? true,
+            query.IncludeFutureCredits ?? false,
+            cancellationToken);
 
         logger.LogInformation("Endpoint Completed");
 

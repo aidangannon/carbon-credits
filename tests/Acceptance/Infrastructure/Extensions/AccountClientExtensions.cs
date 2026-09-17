@@ -52,5 +52,28 @@ public static class AccountClientExtensions
 
         return await client.SendAsync(request);
     }
+
+    public static async Task<HttpResponseMessage> TransferCredit(this HttpClient client, Guid accountId, Guid creditId, TransferCreditRequest body)
+    {
+        var request = new HttpRequestMessage
+        {
+            RequestUri = new Uri($"/accounts/{accountId}/credits/{creditId}/transfer"),
+            Method = HttpMethod.Post,
+            Content = JsonContent.Create(body)
+        };
+
+        return await client.SendAsync(request);
+    }
+
+    public static async Task<HttpResponseMessage> RetireCredit(this HttpClient client, Guid accountId, Guid creditId)
+    {
+        var request = new HttpRequestMessage
+        {
+            RequestUri = new Uri($"/accounts/{accountId}/credits/{creditId}"),
+            Method = HttpMethod.Delete
+        };
+
+        return await client.SendAsync(request);
+    }
 }
 

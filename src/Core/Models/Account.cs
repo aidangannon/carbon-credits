@@ -12,8 +12,28 @@ public class Account
     public required DateTime CreatedAt { set; get; }
     public required IReadOnlyCollection<Credit> Credits { init => _credits = [.. value]; get => _credits; }
 
-    public void Transfer(Account recipient, Guid creditId)
+    public DomainResult Transfer(Account recipient, Guid creditId)
     {
+        var credit = _credits.FirstOrDefault(c => c.Id == creditId);
+        if (credit is null)
+        {
+            return DomainResult.Err(CreditErrors.NotFound);
+        }
+
+        if (CreatedAt > DateTime.UtcNow || recipient.CreatedAt > DateTime.UtcNow)
+        {
+            return DomainResult.Err(AccountErrors.CreatedInFuture);
+        }
+
+        if (credit.IssuedAt > DateTime.UtcNow)
+        {
+            return DomainResult.Err(CreditErrors.IssuedInFuture);
+        }
+
+        _credits.Remove(credit);
+        recipient._credits.Add(credit);
+
+        return DomainResult.Ok();
     }
 
     public DomainResult AddCredit(Project project, Credit credit)
@@ -42,5 +62,32 @@ public class Account
         return _credits
             .Where(c => (includeRetiredCredits || c.RetiredAt is null) && (includeFutureCredits || c.IssuedAt <= DateTime.UtcNow))
             .ToList();
+    }
+
+    public DomainResult RetireCredit(Guid creditId)
+    {
+        if (CreatedAt > DateTime.UtcNow)
+        {
+            return DomainResult.Err(AccountErrors.CreatedInFuture);
+        }
+
+        var credit = _credits.FirstOrDefault(c => c.Id == creditId);
+        if (credit is null)
+        {
+            return DomainResult.Err(CreditErrors.NotFound);
+        }
+
+        if (credit.IssuedAt > DateTime.UtcNow)
+        {
+            return DomainResult.Err(CreditErrors.IssuedInFuture);
+        }
+
+        if (credit.RetiredAt is not null)
+        {
+            return DomainResult.Err(CreditErrors.AlreadyRetired);
+        }
+
+        credit.RetiredAt = DateTime.UtcNow;
+        return DomainResult.Ok();
     }
 }
