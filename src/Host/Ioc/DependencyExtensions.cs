@@ -20,6 +20,7 @@ public static class DependencyExtensions
            .AddTransient<IAccountCreationService, AccountCreationService>()
            .AddTransient<ICreditCreationService, CreditCreationService>()
            .AddTransient<ITransferCreditService, TransferCreditService>()
+           .AddTransient<ICreditRetirementService, CreditRetirementService>()
            .AddTransient<IProjectCreationService, ProjectCreationService>()
            .AddTransient<IProjectRetrievalService, ProjectRetrievalService>();
    }

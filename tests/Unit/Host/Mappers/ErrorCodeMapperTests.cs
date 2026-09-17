@@ -32,11 +32,11 @@ public class ErrorCodeMapperTests
     }
 
     [Fact]
-    public void ToErrorDetails_WhenUnknownErrorCode_Throws()
+    public void ToErrorDetails_WhenAccountCreatedInFuture_ReturnsWith422()
     {
-        var act = () => ErrorCodeMapper.ToErrorDetails("unknown.error");
+        var result = ErrorCodeMapper.ToErrorDetails(AccountErrors.CreatedInFuture);
 
-        act.Should().Throw<InvalidOperationException>();
+        result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
     }
 
     [Fact]
@@ -48,17 +48,25 @@ public class ErrorCodeMapperTests
     }
 
     [Fact]
-    public void ToErrorDetails_WhenCreditProjectNotFoundMustRetire_ReturnsWith422()
+    public void ToErrorDetails_WhenCreditAlreadyRetired_ReturnsWith422()
     {
-        var result = ErrorCodeMapper.ToErrorDetails(CreditErrors.ProjectNotFoundMustRetire);
+        var result = ErrorCodeMapper.ToErrorDetails(CreditErrors.AlreadyRetired);
 
         result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
     }
 
     [Fact]
-    public void ToErrorDetails_WhenAccountCreatedInFuture_ReturnsWith422()
+    public void ToErrorDetails_WhenUnknownErrorCode_Throws()
     {
-        var result = ErrorCodeMapper.ToErrorDetails(AccountErrors.CreatedInFuture);
+        var act = () => ErrorCodeMapper.ToErrorDetails("unknown.error");
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void ToErrorDetails_WhenCreditProjectNotFoundMustRetire_ReturnsWith422()
+    {
+        var result = ErrorCodeMapper.ToErrorDetails(CreditErrors.ProjectNotFoundMustRetire);
 
         result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
     }
