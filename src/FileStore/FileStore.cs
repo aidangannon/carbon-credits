@@ -3,10 +3,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Crosscutting.Result;
-using Persistence.Locking;
-using Persistence.Models;
+using FileStore.Locking;
+using FileStore.Models;
 
-namespace Persistence;
+namespace FileStore;
 
 /// <summary>Generic file-backed store handling record loading, optimistic-concurrency updates, change tracking and locking.</summary>
 public interface IFileStore

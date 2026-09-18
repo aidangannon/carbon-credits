@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Persistence.Locking;
+namespace FileStore.Locking;
 
 /// <summary>Per-key async mutual exclusion for repositories.</summary>
 public class RepositoryLock

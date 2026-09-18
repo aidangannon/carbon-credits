@@ -4,7 +4,7 @@
     <Project Path="src/Core/Core.csproj" />
     <Project Path="src/Crosscutting/Crosscutting.csproj" />
     <Project Path="src/Host/Host.csproj" />
-    <Project Path="src/Persistence/Persistence.csproj" />
+    <Project Path="src/FileStore/FileStore.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Acceptance/Acceptance.csproj" />

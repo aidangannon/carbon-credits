@@ -9,7 +9,7 @@ using Host.Models;
 using LightBDD.XUnit3;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Persistence;
+using FileStore;
 using FileOptions = Crosscutting.Options.FileOptions;
 
 namespace Acceptance.Features.Accounts;

@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Persistence\Persistence.csproj" />
+    <ProjectReference Include="..\FileStore\FileStore.csproj" />
     <ProjectReference Include="..\Crosscutting\Crosscutting.csproj" />
   </ItemGroup>
 

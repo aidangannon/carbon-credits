@@ -14,7 +14,7 @@ The exact set of projects is flexible - new modules can be added freely. The har
 | `Application` | Depends only on `Core`. Ports (I/O interfaces) live inside `Application` - they are internal to the module and registered against their adapters by `Host` at runtime. |
 | `Host` | Can depend on anything. It is the composition root - it wires everything together at runtime. |
 
-Each project's actual references are declared in its `.csproj`: e.g. [`Host.csproj`](/src/Host/Host.csproj), [`Application.csproj`](/src/Application/Application.csproj), [`Persistence.csproj`](/src/Persistence/Persistence.csproj).
+Each project's actual references are declared in its `.csproj`: e.g. [`Host.csproj`](/src/Host/Host.csproj), [`Application.csproj`](/src/Application/Application.csproj), [`FileStore.csproj`](/src/FileStore/FileStore.csproj).
 
 ## Central Package Management (CPM)
 

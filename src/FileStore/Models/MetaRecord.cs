@@ -1,4 +1,4 @@
-namespace Persistence.Models;
+namespace FileStore.Models;
 
 public record MetaRecord
 {

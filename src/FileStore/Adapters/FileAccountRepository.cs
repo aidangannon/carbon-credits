@@ -5,28 +5,28 @@ using Crosscutting.Result;
 using Microsoft.Extensions.Options;
 using FileOptions = Crosscutting.Options.FileOptions;
 
-namespace Persistence.Adapters;
+namespace FileStore.Adapters;
 
-public class FileProjectRepository(IOptions<FileOptions> fileOptions, IFileStore fileStore) : IProjectRepository
+public class FileAccountRepository(IOptions<FileOptions> fileOptions, IFileStore fileStore) : IAccountRepository
 {
-    public async Task<Result<Project>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<Account>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var basePath = fileOptions.Value?.BasePath ?? throw new ArgumentNullException("BasePath", "File base path cannot be null");
-        var path = $"{basePath}/projects/{id}";
+        var path = $"{basePath}/accounts/{id}";
 
-        var result = await fileStore.GetAsync<Project>(path, cancellationToken);
+        var result = await fileStore.GetAsync<Account>(path, cancellationToken);
 
         return result.HasFailed()
-            ? Result<Project>.Err(ProjectErrors.NotFound)
-            : Result<Project>.Ok(result.Unwrap());
+            ? Result<Account>.Err(AccountErrors.NotFound)
+            : Result<Account>.Ok(result.Unwrap());
     }
 
-    public void Add(Project project)
+    public void Add(Account account)
     {
         var basePath = fileOptions.Value?.BasePath ?? throw new ArgumentNullException("BasePath", "File base path cannot be null");
-        var path = $"{basePath}/projects/{project.Id}";
+        var path = $"{basePath}/accounts/{account.Id}";
 
-        fileStore.Add(path, project);
+        fileStore.Add(path, account);
     }
 
     public async Task<Result> SaveAsync(CancellationToken cancellationToken)

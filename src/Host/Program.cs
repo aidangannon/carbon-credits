@@ -13,7 +13,7 @@ builder
     .AddJwtAuthentication(builder.Configuration)
     .AddOpenApi()
     .AddApplication()
-    .AddPersistence()
+    .AddFileStore()
     .AddValidation()
     .AddConfiguration(builder.Configuration);
 

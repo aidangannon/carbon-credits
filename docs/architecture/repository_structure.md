@@ -11,8 +11,8 @@
 | Business logic / state mutation | `src/Core/Models/<Aggregate>.cs` - method on the aggregate | [`src/Core/Models/Account.cs`](/src/Core/Models/Account.cs) |
 | Domain error | `src/Core/Errors/<Aggregate>Errors.cs` | [`src/Core/Errors/AccountErrors.cs`](/src/Core/Errors/AccountErrors.cs) |
 | I/O interface (DB, file, API, hardware) | `src/Application/Ports/I<Name>.cs` | [`src/Application/Ports/IAccountRepository.cs`](/src/Application/Ports/IAccountRepository.cs) |
-| I/O adapter (implements the port) | `src/Persistence/Adapters/<Name>.cs` | [`src/Persistence/Adapters/FileAccountRepository.cs`](/src/Persistence/Adapters/FileAccountRepository.cs) |
-| Generic storage mechanics (load/save, locking, versioning) | `src/Persistence/<Store>.cs` | [`src/Persistence/FileStore.cs`](/src/Persistence/FileStore.cs) |
+| I/O adapter (implements the port) | `src/FileStore/Adapters/<Name>.cs` | [`src/FileStore/Adapters/FileAccountRepository.cs`](/src/FileStore/Adapters/FileAccountRepository.cs) |
+| Generic storage mechanics (load/save, locking, versioning) | `src/FileStore/<Store>.cs` | [`src/FileStore/FileStore.cs`](/src/FileStore/FileStore.cs) |
 | Use-case service | `src/Application/Slices/<Feature>/<Name>Service.cs` | [`src/Application/Slices/Accounts/AccountCreationService.cs`](/src/Application/Slices/Accounts/AccountCreationService.cs) |
 | HTTP endpoint | `src/Host/Handlers/Endpoints/<Feature>/` | [`src/Host/Handlers/Endpoints/Accounts/CreateAccountEndpoint.cs`](/src/Host/Handlers/Endpoints/Accounts/CreateAccountEndpoint.cs) |
 | DI registration | `src/Host/Ioc/DependencyExtensions.cs` | [`src/Host/Ioc/DependencyExtensions.cs`](/src/Host/Ioc/DependencyExtensions.cs) |
@@ -23,11 +23,11 @@
 - Ports (`Application/Ports/I*.cs`) are the only interfaces that matter architecturally - they exist because the adapter must be swappable (e.g. swap file for a real DB without touching any other layer)
 - Slice service interfaces (e.g. `IAccountCreationService`) co-locate with their implementation; they exist purely to make unit testing possible via mocking, not for swappability
 - Logic on the aggregate, not the service - services are a script (load → act → save); the aggregate owns invariants so they're testable without infrastructure
-- `Core` has zero outward dependencies - if it referenced `Persistence` or `Host`, the domain would couple to infrastructure details
+- `Core` has zero outward dependencies - if it referenced `FileStore` or `Host`, the domain would couple to infrastructure details
 
 ## Retrieval Is Generic, Invariants Are Not
 
-Repositories (e.g. [`FileAccountRepository`](/src/Persistence/Adapters/FileAccountRepository.cs)) only do two things: build the key for an aggregate and translate a storage outcome into a domain error (`AccountErrors.NotFound`, etc.). They never contain locking, serialization, versioning, or query logic - that mechanics is generic and lives once, in a shared store (e.g. [`FileStore`](/src/Persistence/FileStore.cs)), reused by every repository regardless of which aggregate it serves.
+Repositories (e.g. [`FileAccountRepository`](/src/FileStore/Adapters/FileAccountRepository.cs)) only do two things: build the key for an aggregate and translate a storage outcome into a domain error (`AccountErrors.NotFound`, etc.). They never contain locking, serialization, versioning, or query logic - that mechanics is generic and lives once, in a shared store (e.g. [`FileStore`](/src/FileStore/FileStore.cs)), reused by every repository regardless of which aggregate it serves.
 
 This works because every repository does the same two things - `GetByIdAsync` and `SaveAsync` for one whole aggregate by id. There is no partial update, no filtering, no joining across aggregates. An aggregate is always loaded whole and saved whole:
 
@@ -44,6 +44,6 @@ The one legitimate exception is a large nested collection on an aggregate (e.g. 
 ```
 Host → Application (Slices + Ports) → Core
           ↑
-     Persistence (implements Ports)
+     FileStore (implements Ports)
      Crosscutting (used by all)
 ```

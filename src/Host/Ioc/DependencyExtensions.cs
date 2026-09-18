@@ -5,8 +5,8 @@ using Crosscutting.Options;
 using FluentValidation;
 using Host.Models;
 using Host.Validators;
-using Persistence;
-using Persistence.Adapters;
+using FileStore;
+using FileStore.Adapters;
 using FileOptions = Crosscutting.Options.FileOptions;
 
 namespace Host.Ioc;
@@ -32,10 +32,10 @@ public static class DependencyExtensions
            .Configure<FileOptions>(configuration.GetSection(nameof(FileOptions)));
    }
 
-   public static IServiceCollection AddPersistence(this IServiceCollection services)
+   public static IServiceCollection AddFileStore(this IServiceCollection services)
    {
        return services
-           .AddScoped<IFileStore, FileStore>()
+           .AddScoped<IFileStore, FileStore.FileStore>()
            .AddScoped<IAccountRepository, FileAccountRepository>()
            .AddScoped<IProjectRepository, FileProjectRepository>();
    }
