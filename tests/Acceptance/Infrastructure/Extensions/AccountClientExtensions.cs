@@ -1,15 +1,27 @@
 using System.Net.Http.Json;
 using Host.Models;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Acceptance.Infrastructure.Extensions;
 
 public static class AccountClientExtensions
 {
-    public static async Task<HttpResponseMessage> GetAccountById(this HttpClient client, Guid id)
+    public static async Task<HttpResponseMessage> GetAccountById(this HttpClient client, Guid id, bool? includeRetiredCredits = null, bool? includeFutureCredits = null)
     {
+        var query = new Dictionary<string, string?>();
+        if (includeRetiredCredits is not null)
+        {
+            query["includeRetiredCredits"] = includeRetiredCredits.ToString();
+        }
+
+        if (includeFutureCredits is not null)
+        {
+            query["includeFutureCredits"] = includeFutureCredits.ToString();
+        }
+
         var request = new HttpRequestMessage
         {
-            RequestUri = new Uri($"/accounts/{id}"),
+            RequestUri = new Uri(QueryHelpers.AddQueryString($"/accounts/{id}", query), UriKind.Relative),
             Method = HttpMethod.Get
         };
 

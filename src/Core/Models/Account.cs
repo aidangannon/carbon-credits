@@ -57,6 +57,14 @@ public class Account
         return DomainResult.Ok();
     }
 
+    public IReadOnlyCollection<Credit> GetCredits(bool includeRetiredCredits, bool includeFutureCredits)
+    {
+        return _credits
+            .Where(c => includeRetiredCredits || c.RetiredAt is null)
+            .Where(c => includeFutureCredits || c.IssuedAt <= DateTime.UtcNow)
+            .ToList();
+    }
+
     public DomainResult RetireCredit(Guid creditId)
     {
         if (CreatedAt > DateTime.UtcNow)
