@@ -60,7 +60,7 @@ public partial class Get_Account_By_Id : FeatureFixture
     {
         var credit = _fixture
             .Build<Credit>()
-            .With(c => c.RetiredAt, (DateTime?)null)
+            .Without(c => c.RetiredAt)
             .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(-1))
             .Create();
 
@@ -97,7 +97,7 @@ public partial class Get_Account_By_Id : FeatureFixture
     {
         var futureCredit = _fixture
             .Build<Credit>()
-            .With(c => c.RetiredAt, (DateTime?)null)
+            .Without(c => c.RetiredAt)
             .With(c => c.IssuedAt, DateTime.UtcNow.AddDays(1))
             .Create();
         _futureCreditId = futureCredit.Id;
