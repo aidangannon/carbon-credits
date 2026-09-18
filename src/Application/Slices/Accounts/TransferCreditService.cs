@@ -5,14 +5,14 @@ using Crosscutting.Result;
 
 namespace Application.Slices.Accounts;
 
-public interface ITransferCreditService
+public interface ICreditTransferService
 {
-    Task<Result<Account>> TransferCredit(Guid accountId, Guid recipientAccountId, Guid creditId, CancellationToken cancellationToken);
+    Task<Result<Account>> Transfer(Guid accountId, Guid recipientAccountId, Guid creditId, CancellationToken cancellationToken);
 }
 
-public class TransferCreditService(IAccountRepository accountRepository, IProjectRepository projectRepository) : ITransferCreditService
+public class CreditTransferService(IAccountRepository accountRepository, IProjectRepository projectRepository) : ICreditTransferService
 {
-    public async Task<Result<Account>> TransferCredit(Guid accountId, Guid recipientAccountId, Guid creditId, CancellationToken cancellationToken)
+    public async Task<Result<Account>> Transfer(Guid accountId, Guid recipientAccountId, Guid creditId, CancellationToken cancellationToken)
     {
         var accountResult = await accountRepository.GetByIdAsync(accountId, cancellationToken);
         if (accountResult.HasFailed())

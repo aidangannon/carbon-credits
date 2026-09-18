@@ -24,7 +24,7 @@ public static class TransferCreditEndpoint
         [FromRoute] Guid accountId,
         [FromRoute] Guid creditId,
         [FromBody] TransferCreditRequest request,
-        [FromServices] ITransferCreditService transferCreditService,
+        [FromServices] ICreditTransferService creditTransferService,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken
     )
@@ -40,7 +40,7 @@ public static class TransferCreditEndpoint
 
         logger.LogInformation("Endpoint Called");
 
-        var serviceResult = await transferCreditService.TransferCredit(accountId, request.RecipientAccountId, creditId, cancellationToken);
+        var serviceResult = await creditTransferService.Transfer(accountId, request.RecipientAccountId, creditId, cancellationToken);
 
         logger.LogInformation("Endpoint Completed");
 
