@@ -21,7 +21,11 @@ Each `.steps.cs` file should own its own steps. Steps that retrieve or manipulat
 
 ## Parameterised Step Names
 
-When a step method takes a parameter, include the parameter's name in uppercase somewhere in the method name (e.g. `A_Recipient_Account_Exists_Created_At_CREATED(DateTime created)`). LightBDD matches each uppercase segment of the method name against the corresponding argument passed at the call site and renders it in the readable scenario output, so the value shows up inline instead of being hidden. Each uppercase segment must match its parameter name exactly (case-insensitively) for this to work; a method can have multiple such segments in any position (not just as a suffix), e.g. `The_Response_Should_Have_Problem_Details_With_Status_STATUS_And_Detail_DETAIL`. See [`HttpSteps.The_Response_Should_Have_Status_Code_STATUS`](/tests/Acceptance/CommonSteps/HttpSteps.cs) for the established pattern.
+When a step method takes a parameter, include the parameter's name in uppercase somewhere in the method name (e.g. `A_Recipient_Account_Exists_Created_At_CREATED(DateTime created)`). LightBDD matches each uppercase segment of the method name against the corresponding argument passed at the call site and renders it in the readable scenario output, so the value shows up inline instead of being hidden. Each uppercase segment must match its parameter name **exactly** (case-insensitively, with no underscores or other separators inside it) for this to work; a method can have multiple such segments in any position (not just as a suffix), e.g. `The_Response_Should_Have_Problem_Details_With_Status_STATUS_And_Detail_DETAIL`.
+
+Get this wrong and LightBDD silently fails to bind the value into the readable output - it will not error, so double-check the uppercase segment character-for-character matches the parameter name. For example, for `Guid creditId`, the segment must be `CREDITID`, written as `The_Response_Should_Include_The_CREDITID(Guid creditId)` - **not** `The_Response_Should_Include_The_Credit_ID(Guid creditId)`, which only has `ID` in uppercase and does not match the parameter name `creditId` at all.
+
+See [`HttpSteps.The_Response_Should_Have_Status_Code_STATUS`](/tests/Acceptance/CommonSteps/HttpSteps.cs) for the established pattern.
 
 ## Common Steps
 

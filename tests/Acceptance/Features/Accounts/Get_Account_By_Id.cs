@@ -43,7 +43,7 @@ public partial class Get_Account_By_Id
             given => An_Account_Exists_With_A_Retired_Credit(),
             when => Get_Account_By_Id_ID_Request_Is_Sent(_accountId),
             then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.OK, _httpResponse!),
-            and => The_Response_Should_Include_The_Credit_ID(_retiredCreditId)
+            and => The_Response_Should_Include_The_CREDITID(_retiredCreditId)
         );
     }
 
@@ -54,7 +54,7 @@ public partial class Get_Account_By_Id
             given => An_Account_Exists_With_A_Future_Credit(),
             when => Get_Account_By_Id_ID_Request_Is_Sent(_accountId),
             then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.OK, _httpResponse!),
-            and => The_Response_Should_Not_Include_The_Credit_ID(_futureCreditId)
+            and => The_Response_Should_Not_Include_The_CREDITID(_futureCreditId)
         );
     }
 
@@ -65,7 +65,7 @@ public partial class Get_Account_By_Id
             given => An_Account_Exists_With_A_Future_Credit(),
             when => Get_Account_By_Id_ID_Request_Is_Sent_With_Filters(_accountId, null, true),
             then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.OK, _httpResponse!),
-            and => The_Response_Should_Include_The_Credit_ID(_futureCreditId)
+            and => The_Response_Should_Include_The_CREDITID(_futureCreditId)
         );
     }
 
@@ -76,7 +76,7 @@ public partial class Get_Account_By_Id
             given => An_Account_Exists_With_A_Retired_Credit(),
             when => Get_Account_By_Id_ID_Request_Is_Sent_With_Filters(_accountId, false, null),
             then => HttpSteps.The_Response_Should_Have_Status_Code_STATUS(HttpStatusCode.OK, _httpResponse!),
-            and => The_Response_Should_Not_Include_The_Credit_ID(_retiredCreditId)
+            and => The_Response_Should_Not_Include_The_CREDITID(_retiredCreditId)
         );
     }
 }

@@ -119,14 +119,14 @@ public partial class Get_Account_By_Id : FeatureFixture
         accountResponse!.ShouldEqual(_account!);
     }
 
-    private async Task The_Response_Should_Include_The_Credit_ID(Guid creditId)
+    private async Task The_Response_Should_Include_The_CREDITID(Guid creditId)
     {
         var accountResponse = await _httpResponse!.Content.ReadFromJsonAsync<AccountResponse>();
 
         accountResponse!.Credits.Should().Contain(c => c.Id == creditId);
     }
 
-    private async Task The_Response_Should_Not_Include_The_Credit_ID(Guid creditId)
+    private async Task The_Response_Should_Not_Include_The_CREDITID(Guid creditId)
     {
         var accountResponse = await _httpResponse!.Content.ReadFromJsonAsync<AccountResponse>();
 
