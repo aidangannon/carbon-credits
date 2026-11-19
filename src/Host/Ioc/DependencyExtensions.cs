@@ -21,6 +21,7 @@ public static class DependencyExtensions
            .AddTransient<ICreditCreationService, CreditCreationService>()
            .AddTransient<ICreditTransferService, CreditTransferService>()
            .AddTransient<ICreditRetirementService, CreditRetirementService>()
+           .AddTransient<IBulkCreditRetirementService, BulkCreditRetirementService>()
            .AddTransient<IProjectCreationService, ProjectCreationService>()
            .AddTransient<IProjectRetrievalService, ProjectRetrievalService>();
    }
@@ -44,6 +45,7 @@ public static class DependencyExtensions
    {
        return services
            .AddTransient<IValidator<CreateAccountRequest>, CreateAccountRequestValidator>()
+           .AddTransient<IValidator<BulkRetireCreditsRequest>, BulkRetireCreditsRequestValidator>()
            .AddTransient<IValidator<CreateProjectRequest>, CreateProjectRequestValidator>();
    }
 }

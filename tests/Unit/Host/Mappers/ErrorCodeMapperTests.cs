@@ -70,4 +70,12 @@ public class ErrorCodeMapperTests
 
         result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
     }
+
+    [Fact]
+    public void ToErrorDetails_WhenBulkRetireFailed_ReturnsWith422()
+    {
+        var result = ErrorCodeMapper.ToErrorDetails(CreditErrors.BulkRetireFailed);
+
+        result.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
+    }
 }
