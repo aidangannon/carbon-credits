@@ -67,28 +67,75 @@ public class Account
 
     public DomainResult RetireCredit(Guid creditId)
     {
-        if (CreatedAt > DateTime.UtcNow)
+        var validation = ValidateRetirement(creditId);
+        if (validation.Error is not null)
         {
-            return DomainResult.Err(AccountErrors.CreatedInFuture);
+            return DomainResult.Err(validation.Error);
+        }
+
+        validation.Credit!.RetiredAt = DateTime.UtcNow;
+        return DomainResult.Ok();
+    }
+
+    public BulkRetireCreditsResult RetireCredits(IReadOnlyCollection<Guid> creditIds)
+    {
+        var ids = creditIds.Distinct().ToList();
+
+        var accountError = ValidateAccount();
+        if (accountError is not null)
+        {
+            return BulkRetireCreditsResult.AccountError(accountError);
+        }
+
+        var checks = ids.Select(id => (Id: id, Result: ValidateRetirement(id))).ToList();
+        var failures = checks
+            .Where(c => c.Result.Error is not null)
+            .Select(c => new CreditRetirementFailure(c.Id, c.Result.Error!))
+            .ToList();
+
+        if (failures.Count > 0)
+        {
+            return BulkRetireCreditsResult.CreditFailures(failures);
+        }
+
+        var retiredAt = DateTime.UtcNow;
+        foreach (var check in checks)
+        {
+            check.Result.Credit!.RetiredAt = retiredAt;
+        }
+
+        return BulkRetireCreditsResult.Ok();
+    }
+
+    private string? ValidateAccount()
+    {
+        return CreatedAt > DateTime.UtcNow ? AccountErrors.CreatedInFuture : null;
+    }
+
+    private (Credit? Credit, string? Error) ValidateRetirement(Guid creditId)
+    {
+        var accountError = ValidateAccount();
+        if (accountError is not null)
+        {
+            return (null, accountError);
         }
 
         var credit = _credits.FirstOrDefault(c => c.Id == creditId);
         if (credit is null)
         {
-            return DomainResult.Err(CreditErrors.NotFound);
+            return (null, CreditErrors.NotFound);
         }
 
         if (credit.IssuedAt > DateTime.UtcNow)
         {
-            return DomainResult.Err(CreditErrors.IssuedInFuture);
+            return (null, CreditErrors.IssuedInFuture);
         }
 
         if (credit.RetiredAt is not null)
         {
-            return DomainResult.Err(CreditErrors.AlreadyRetired);
+            return (null, CreditErrors.AlreadyRetired);
         }
 
-        credit.RetiredAt = DateTime.UtcNow;
-        return DomainResult.Ok();
+        return (credit, null);
     }
 }

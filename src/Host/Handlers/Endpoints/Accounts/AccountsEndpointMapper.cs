@@ -11,6 +11,7 @@ public static class AccountsEndpointMapper
             .MapCreateCredit()
             .MapTransferCredit()
             .MapRetireCredit()
+            .MapBulkRetireCredits()
             .WithTags("Accounts");
     }
 }

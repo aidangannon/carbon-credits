@@ -7,6 +7,7 @@ public static class LoggingOperations
     public const string CreateCredit = nameof(CreateCredit);
     public const string TransferCredit = nameof(TransferCredit);
     public const string RetireCredit = nameof(RetireCredit);
+    public const string BulkRetireCredits = nameof(BulkRetireCredits);
     public const string CreateProject = nameof(CreateProject);
     public const string GetProjectById = nameof(GetProjectById);
 }
