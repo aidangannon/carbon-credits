@@ -72,23 +72,71 @@ public class Account
             return DomainResult.Err(AccountErrors.CreatedInFuture);
         }
 
-        var credit = _credits.FirstOrDefault(c => c.Id == creditId);
+        var error = ValidateRetirement(creditId, out var credit);
+        if (error is not null)
+        {
+            return DomainResult.Err(error);
+        }
+
+        credit!.RetiredAt = DateTime.UtcNow;
+        return DomainResult.Ok();
+    }
+
+    public BulkDomainResult RetireCredits(IReadOnlyCollection<Guid> creditIds)
+    {
+        if (CreatedAt > DateTime.UtcNow)
+        {
+            return BulkDomainResult.Err(AccountErrors.CreatedInFuture);
+        }
+
+        var ids = creditIds.Distinct().ToList();
+        var failures = new List<CreditFailure>();
+        var credits = new List<Credit>();
+        foreach (var id in ids)
+        {
+            var error = ValidateRetirement(id, out var credit);
+            if (error is not null)
+            {
+                failures.Add(new CreditFailure(id, error));
+            }
+            else
+            {
+                credits.Add(credit!);
+            }
+        }
+
+        if (failures.Count > 0)
+        {
+            return BulkDomainResult.Err(failures);
+        }
+
+        var retiredAt = DateTime.UtcNow;
+        foreach (var credit in credits)
+        {
+            credit.RetiredAt = retiredAt;
+        }
+
+        return BulkDomainResult.Ok();
+    }
+
+    private string? ValidateRetirement(Guid creditId, out Credit? credit)
+    {
+        credit = _credits.FirstOrDefault(c => c.Id == creditId);
         if (credit is null)
         {
-            return DomainResult.Err(CreditErrors.NotFound);
+            return CreditErrors.NotFound;
         }
 
         if (credit.IssuedAt > DateTime.UtcNow)
         {
-            return DomainResult.Err(CreditErrors.IssuedInFuture);
+            return CreditErrors.IssuedInFuture;
         }
 
         if (credit.RetiredAt is not null)
         {
-            return DomainResult.Err(CreditErrors.AlreadyRetired);
+            return CreditErrors.AlreadyRetired;
         }
 
-        credit.RetiredAt = DateTime.UtcNow;
-        return DomainResult.Ok();
+        return null;
     }
 }

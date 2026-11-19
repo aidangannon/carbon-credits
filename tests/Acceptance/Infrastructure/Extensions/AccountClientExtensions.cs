@@ -64,6 +64,18 @@ public static class AccountClientExtensions
         return await client.SendAsync(request);
     }
 
+    public static async Task<HttpResponseMessage> BulkRetireCredits(this HttpClient client, Guid accountId, BulkRetireCreditsRequest body)
+    {
+        var request = new HttpRequestMessage
+        {
+            RequestUri = new Uri($"/accounts/{accountId}/credits/bulk-delete", UriKind.Relative),
+            Method = HttpMethod.Post,
+            Content = JsonContent.Create(body)
+        };
+
+        return await client.SendAsync(request);
+    }
+
     public static async Task<HttpResponseMessage> RetireCredit(this HttpClient client, Guid accountId, Guid creditId)
     {
         var request = new HttpRequestMessage
